@@ -28,7 +28,7 @@ export default function Hero() {
         </p>
       </div>
       <div className="relative mt-5">
-        <Button asChild className="cursor-pointer">
+        <Button variant={'ghost'} asChild className="cursor-pointer ring-1 ring-white text-white">
           <Link href={'#features'}>Our services</Link>
         </Button>
       </div>
