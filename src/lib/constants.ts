@@ -2,24 +2,24 @@ import { MealPlan, NavLink, Testimonial } from './interfaces'
 
 export const MEAL_PLANS: MealPlan[] = [
   {
-    name: 'Starter Plan',
-    price: 'Rp 299.000 / week',
-    description: 'Perfect for individuals looking to try healthy meals.',
+    name: 'Diet Plan',
+    price: 'Rp 30.000 / meal',
+    description:
+      'Perfect for individuals looking to try healthy meals. Pay per meal, no weekly commitment.',
     features: [
-      '7 meals (lunch or dinner)',
+      'Order as many meals as you want',
       'Free delivery in Jabodetabek',
       'Customizable menu',
       'Nutritionist support',
     ],
-    mealsPerWeek: 7,
     deliveryArea: 'Jabodetabek',
     support: 'Nutritionist support',
     isRecommended: false,
     detailedDescription:
-      'The Starter Plan is designed for individuals who want to eat healthy without hassle. Enjoy a rotating menu with balanced nutrition, delivered fresh to your door.',
+      'The Diet Plan is designed for individuals who want to eat healthy without hassle. Enjoy a rotating menu with balanced nutrition, delivered fresh to your door. Pay only for the meals you order.',
     caloriesPerMeal: '400-600 kcal',
     menuSample: ['Grilled Chicken Salad', 'Beef Teriyaki Bowl', 'Vegetarian Pasta'],
-    deliveryFrequency: 'Once per day',
+    deliveryFrequency: 'Flexible (choose your schedule)',
     dietaryOptions: ['Regular', 'Vegetarian'],
     faq: [
       {
@@ -33,50 +33,49 @@ export const MEAL_PLANS: MealPlan[] = [
     ],
   },
   {
-    name: 'Family Plan',
-    price: 'Rp 999.000 / week',
-    description: 'Ideal for families or groups up to 4 people.',
+    name: 'Protein Plan',
+    price: 'Rp 40.000 / meal',
+    description: 'Ideal for families or groups up to 4 people. Pay per meal, order as needed.',
     features: [
-      '28 meals (lunch & dinner)',
-      'Free delivery in Greater Jakarta',
       'Family-style portions',
+      'Free delivery in Greater Jakarta',
+      'Kid-friendly menu options',
       'Weekly menu rotation',
     ],
     popular: true,
-    mealsPerWeek: 28,
     deliveryArea: 'Greater Jakarta',
     support: 'Family nutritionist support',
     isRecommended: true,
     detailedDescription:
-      'The Family Plan is perfect for busy families. Get generous portions, kid-friendly options, and flexible delivery times.',
+      'The Protein Plan is perfect for busy families. Get generous portions, kid-friendly options, and flexible delivery times. Pay per meal, no minimum order required.',
     caloriesPerMeal: '500-700 kcal',
     menuSample: ['Chicken Katsu Bento', 'Salmon Rice Bowl', 'Vegetable Stir Fry'],
-    deliveryFrequency: 'Twice per day',
+    deliveryFrequency: 'Flexible (choose your schedule)',
     dietaryOptions: ['Regular', 'Vegetarian', 'Kids'],
     faq: [
       {
         question: 'Can I change delivery address?',
         answer: 'Yes, contact support to update your address.',
       },
-      { question: 'Is there a minimum order?', answer: 'No minimum for Family Plan.' },
+      { question: 'Is there a minimum order?', answer: 'No minimum for Protein Plan.' },
     ],
   },
   {
-    name: 'Executive Plan',
-    price: 'Rp 1.499.000 / week',
-    description: 'For busy professionals who want premium, tailored meals.',
+    name: 'Royal Plan',
+    price: 'Rp 60.000 / meal',
+    description:
+      'For busy professionals who want premium, tailored meals. Pay per meal, order anytime.',
     features: [
-      '14 premium meals',
+      'Premium menu options',
       'Priority delivery',
       'Personalized nutrition plan',
-      'Exclusive menu options',
+      'Exclusive gourmet meals',
     ],
-    mealsPerWeek: 14,
     deliveryArea: 'All major cities',
     support: 'Personal nutritionist',
     isRecommended: false,
     detailedDescription:
-      'The Executive Plan offers gourmet meals, priority delivery, and a personal nutritionist for tailored meal planning.',
+      'The Royal Plan offers gourmet meals, priority delivery, and a personal nutritionist for tailored meal planning. Pay per meal, with flexible scheduling.',
     caloriesPerMeal: '450-650 kcal',
     menuSample: ['Steak & Quinoa Salad', 'Seared Tuna Bowl', 'Vegan Buddha Bowl'],
     deliveryFrequency: 'Flexible (choose your schedule)',

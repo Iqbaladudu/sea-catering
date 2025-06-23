@@ -47,12 +47,7 @@ export default function MenuDialog({
             </div>
             {/* Responsive info grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
-              {selectedPlan.mealsPerWeek && (
-                <div>
-                  <span className="font-semibold text-gray-800">Meals per week:</span>{' '}
-                  {selectedPlan.mealsPerWeek}
-                </div>
-              )}
+              {/* Meals per week removed, as plans are now per meal */}
               {selectedPlan.deliveryArea && (
                 <div>
                   <span className="font-semibold text-gray-800">Delivery area:</span>{' '}
