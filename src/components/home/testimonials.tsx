@@ -3,34 +3,10 @@
 import * as React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence, useAnimation } from 'framer-motion'
-
-interface Testimonial {
-  name: string
-  message: string
-  rating: number
-}
-
-const SAMPLE_TESTIMONIALS: Testimonial[] = [
-  {
-    name: 'Andrew',
-    message: 'The meals are delicious, healthy, and always delivered on time. Highly recommended!',
-    rating: 5,
-  },
-  {
-    name: 'Sarah',
-    message: 'Great variety of menu options and perfect for families. Even my kids love it!',
-    rating: 4,
-  },
-  {
-    name: 'David',
-    message: 'Customer service is very responsive. The executive plan truly feels premium!',
-    rating: 5,
-  },
-]
+import { Testimonial } from '@/lib/interfaces'
+import { SAMPLE_TESTIMONIALS } from '@/lib/constants'
 
 export const Testimonials: React.FC = () => {
   const [testimonials, setTestimonials] = React.useState<Testimonial[]>(SAMPLE_TESTIMONIALS)
@@ -46,7 +22,6 @@ export const Testimonials: React.FC = () => {
   const [dragging, setDragging] = React.useState(false)
   const controls = useAnimation()
 
-  // Carousel auto-advance every 7s unless paused
   React.useEffect(() => {
     if (paused || dragging) return
     const timer = setInterval(() => {
@@ -55,7 +30,6 @@ export const Testimonials: React.FC = () => {
     return () => clearInterval(timer)
   }, [testimonials.length, paused, dragging])
 
-  // Keyboard arrow navigation
   React.useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') prevSlide()
@@ -93,22 +67,17 @@ export const Testimonials: React.FC = () => {
     setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length)
   const nextSlide = () => setCurrent((prev) => (prev + 1) % testimonials.length)
 
-  // For swipe/drag
   const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
     setDragging(false)
     if (info.offset.x > 80) prevSlide()
     else if (info.offset.x < -80) nextSlide()
   }
 
-  // Animated star rating input
-  const [hoverRating, setHoverRating] = React.useState<number | null>(null)
-
   return (
     <section id="testimonials" className="container max-w-4xl py-12 px-4">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 mb-4">
         What Our Customers Say
       </h2>
-      {/* Carousel */}
       <div
         className="relative flex flex-col items-center mb-10"
         onMouseEnter={() => setPaused(true)}
@@ -162,7 +131,6 @@ export const Testimonials: React.FC = () => {
             </motion.div>
           </AnimatePresence>
         </div>
-        {/* Carousel Controls */}
         <div className="flex items-center gap-3 mt-4">
           <Button
             variant="ghost"

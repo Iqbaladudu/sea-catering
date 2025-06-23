@@ -1,4 +1,4 @@
-import { MealPlan, NavLink } from './interfaces'
+import { MealPlan, NavLink, Testimonial } from './interfaces'
 
 export const MEAL_PLANS: MealPlan[] = [
   {
@@ -96,4 +96,22 @@ export const NAV_LINKS: NavLink[] = [
   { name: 'Meal Plans', href: '/#menu' },
   { name: 'Subscription', href: '/subscription' },
   { name: 'Contact Us', href: '/#contact' },
+]
+
+export const SAMPLE_TESTIMONIALS: Testimonial[] = [
+  {
+    name: 'Andrew',
+    message: 'The meals are delicious, healthy, and always delivered on time. Highly recommended!',
+    rating: 5,
+  },
+  {
+    name: 'Sarah',
+    message: 'Great variety of menu options and perfect for families. Even my kids love it!',
+    rating: 4,
+  },
+  {
+    name: 'David',
+    message: 'Customer service is very responsive. The executive plan truly feels premium!',
+    rating: 5,
+  },
 ]
