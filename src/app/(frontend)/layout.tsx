@@ -1,6 +1,7 @@
 import React from 'react'
 import './styles.css'
 import { ThemeProvider } from '@/components/theme-provider'
+import Footer from '@/components/shared/footer'
 
 export const metadata = {
   description: 'A blank template using Payload in a Next.js app.',
@@ -22,6 +23,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             disableTransitionOnChange
           >
             {children}
+            <Footer />
           </ThemeProvider>
         </body>
       </html>
