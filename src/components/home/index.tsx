@@ -3,6 +3,7 @@ import Hero from './hero'
 import Features from './features'
 import Contact from './contact'
 import Menu from './menu'
+import Testimonials from './testimonials'
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <Hero />
       <Features />
       <Menu />
+      <Testimonials />
       <Contact />
     </main>
   )
