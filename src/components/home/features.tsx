@@ -1,4 +1,4 @@
-import { Info, Truck, Utensils } from 'lucide-react'
+import { CalendarCheck, Info, Truck, Utensils } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 interface Feature {
@@ -7,7 +7,7 @@ interface Feature {
   description: string
 }
 
-const features: Feature[] = [
+export const features: Feature[] = [
   {
     icon: <Utensils className="w-8 h-8 text-primary" />,
     title: 'Meal Customization',
@@ -24,21 +24,26 @@ const features: Feature[] = [
     description:
       'Detailed nutritional info for every meal, so you know exactly what you’re eating.',
   },
+  {
+    icon: <CalendarCheck className="w-8 h-8 text-primary" />,
+    title: 'Flexible Subscription',
+    description: 'Pause, skip, or reschedule your meal plans anytime with ease.',
+  },
 ]
 
 export default function Features() {
   return (
     <section
       id="features"
-      className="w-full max-w-5xl px-4 py-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+      className="w-full container px-4 py-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
     >
       {features.map((feature) => (
         <Card
           key={feature.title}
           className="flex flex-col items-center text-center shadow-md hover:shadow-xl transition-shadow duration-300 rounded-2xl bg-white"
         >
-          <CardHeader>
-            <div className="flex justify-center items-center mb-2">{feature.icon}</div>
+          <CardHeader className="w-full flex-row justify-center items-center">
+            <div className="mb-2 mx-auto">{feature.icon}</div>
             <CardTitle className="text-lg md:text-xl font-semibold">{feature.title}</CardTitle>
           </CardHeader>
           <CardContent>
