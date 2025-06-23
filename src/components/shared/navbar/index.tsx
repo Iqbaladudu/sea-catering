@@ -22,7 +22,7 @@ export const Navbar: React.FC = () => {
   }
 
   return (
-    <nav className="w-full bg-white/80 backdrop-blur-md shadow-sm fixed top-0 left-0 z-30">
+    <nav className="w-full bg-white/80 backdrop-blur-md shadow-sm top-0 left-0 z-30">
       <div className="container mx-auto flex items-center justify-between px-4 py-3 md:py-4">
         <Link href="/" className="text-xl font-bold text-primary tracking-tight">
           SEA Catering
