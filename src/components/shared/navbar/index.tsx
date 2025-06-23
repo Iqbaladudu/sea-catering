@@ -6,29 +6,16 @@ import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-interface NavLink {
-  name: string
-  href: string
-}
-
-const NAV_LINKS: NavLink[] = [
-  { name: 'Home', href: '/' },
-  { name: 'Menu / Meal Plans', href: '/menu' },
-  { name: 'Subscription', href: '/subscription' },
-  { name: 'Contact Us', href: '/#contact' }, // Assumes Contact section is on home, adjust if separate page
-]
+import { NAV_LINKS } from '@/lib/constants'
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = React.useState<boolean>(false)
 
-  // Close mobile menu on route change
   React.useEffect(() => {
     setMobileOpen(false)
   }, [pathname])
 
-  // Helper to determine if a link is active
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'
     return pathname.startsWith(href)
@@ -37,11 +24,9 @@ export const Navbar: React.FC = () => {
   return (
     <nav className="w-full bg-white/80 backdrop-blur-md shadow-sm fixed top-0 left-0 z-30">
       <div className="container mx-auto flex items-center justify-between px-4 py-3 md:py-4">
-        {/* Logo / Brand */}
         <Link href="/" className="text-xl font-bold text-primary tracking-tight">
           SEA Catering
         </Link>
-        {/* Desktop Nav */}
         <div className="hidden md:flex gap-2 lg:gap-4 items-center">
           {NAV_LINKS.map((link) => (
             <Link
@@ -57,7 +42,6 @@ export const Navbar: React.FC = () => {
             </Link>
           ))}
         </div>
-        {/* Mobile Hamburger */}
         <Button
           variant="ghost"
           size="icon"
@@ -68,7 +52,7 @@ export const Navbar: React.FC = () => {
           {mobileOpen ? <X size={28} /> : <Menu size={28} />}
         </Button>
       </div>
-      {/* Mobile Menu */}
+
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -89,7 +73,7 @@ export const Navbar: React.FC = () => {
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
                   onClick={() => setMobileOpen(false)}
-                  style={{ minHeight: 44 }} // Touch target
+                  style={{ minHeight: 44 }}
                 >
                   {link.name}
                 </Link>
