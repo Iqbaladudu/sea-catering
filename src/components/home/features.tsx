@@ -33,24 +33,27 @@ export const features: Feature[] = [
 
 export default function Features() {
   return (
-    <section
-      id="features"
-      className="w-full container px-4 py-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
-    >
-      {features.map((feature) => (
-        <Card
-          key={feature.title}
-          className="flex flex-col items-center text-center shadow-md hover:shadow-xl transition-shadow duration-300 rounded-2xl bg-white"
-        >
-          <CardHeader className="w-full flex-row justify-center items-center">
-            <div className="mb-2 mx-auto">{feature.icon}</div>
-            <CardTitle className="text-lg md:text-xl font-semibold">{feature.title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 text-sm md:text-base">{feature.description}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </section>
+    <>
+      <h1 className="text-2xl lg:text-3xl text-gray-900 font-bold mt-10">Our Featured Services</h1>
+      <section
+        id="features"
+        className="w-full container px-4 py-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        {features.map((feature) => (
+          <Card
+            key={feature.title}
+            className="flex flex-col items-center text-center shadow-md hover:shadow-xl transition-shadow duration-300 rounded-2xl bg-white"
+          >
+            <CardHeader className="w-full flex-row justify-center items-center">
+              <div className="mb-2 mx-auto">{feature.icon}</div>
+              <CardTitle className="text-lg md:text-xl font-semibold">{feature.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 text-sm md:text-base">{feature.description}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+    </>
   )
 }
