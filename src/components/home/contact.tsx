@@ -43,12 +43,11 @@ export const Contact: React.FC<FooterProps> = () => {
   }
 
   return (
-    <section className="container max-w-11/12 mb-10">
+    <section id="contact" className="container max-w-11/12 mb-10">
       <h1 className="text-2xl lg:text-3xl text-gray-900 font-bold mt-10 text-center mb-4">
         Contact Us
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Info Card */}
         <Card className="w-full border-none p-4">
           <CardHeader>
             <CardTitle className="text-xl">Reach Out to Us</CardTitle>
@@ -78,7 +77,6 @@ export const Contact: React.FC<FooterProps> = () => {
             </div>
           </CardContent>
         </Card>
-        {/* Contact Form */}
         <Card className="w-full border-none p-4 flex flex-col justify-center">
           <CardHeader>
             <CardTitle className="text-xl">Contact Form</CardTitle>
