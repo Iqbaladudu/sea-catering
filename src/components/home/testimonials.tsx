@@ -4,23 +4,20 @@ import * as React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
-import { motion, AnimatePresence, useAnimation } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Testimonial } from '@/lib/interfaces'
 import { SAMPLE_TESTIMONIALS } from '@/lib/constants'
 
 export const Testimonials: React.FC = () => {
-  const [testimonials, setTestimonials] = React.useState<Testimonial[]>(SAMPLE_TESTIMONIALS)
+  const [testimonials, _setTestimonials] = React.useState<Testimonial[]>(SAMPLE_TESTIMONIALS)
   const [form, setForm] = React.useState<{ name: string; message: string; rating: number }>({
     name: '',
     message: '',
     rating: 5,
   })
-  const [submitting, setSubmitting] = React.useState(false)
-  const [error, setError] = React.useState('')
   const [current, setCurrent] = React.useState(0)
   const [paused, setPaused] = React.useState(false)
   const [dragging, setDragging] = React.useState(false)
-  const controls = useAnimation()
 
   React.useEffect(() => {
     if (paused || dragging) return
@@ -45,22 +42,6 @@ export const Testimonials: React.FC = () => {
 
   const handleRating = (rating: number) => {
     setForm((f) => ({ ...f, rating }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    if (!form.name.trim() || !form.message.trim() || form.rating < 1) {
-      setError('Mohon isi semua kolom dan beri rating.')
-      return
-    }
-    setSubmitting(true)
-    setTimeout(() => {
-      setTestimonials([{ ...form, rating: Number(form.rating) }, ...testimonials])
-      setForm({ name: '', message: '', rating: 5 })
-      setSubmitting(false)
-      setCurrent(0)
-    }, 800)
   }
 
   const prevSlide = () =>
