@@ -50,7 +50,7 @@ export const SubscriptionForm: React.FC = () => {
   const [error, setError] = React.useState<string>('')
 
   const selectedPlan = MEAL_PLANS.find((p) => p.name === form.plan)
-  const planPrice = selectedPlan ? Number(selectedPlan.price.replace(/[^\d]/g, '')) : 0
+  const planPrice = selectedPlan ? selectedPlan.price : 0
   const mealTypeCount = form.mealTypes.length
   const deliveryDayCount = form.deliveryDays.length
   const totalPrice =
@@ -58,7 +58,6 @@ export const SubscriptionForm: React.FC = () => {
       ? planPrice * mealTypeCount * deliveryDayCount * 4.3
       : 0
 
-  // Handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
@@ -181,7 +180,7 @@ export const SubscriptionForm: React.FC = () => {
                       required
                     />
                     <span className="font-semibold">{plan.name}</span>
-                    <span className="text-gray-500 text-sm">{plan.price}</span>
+                    <span className="text-gray-500 text-sm">{plan.price} / meal</span>
                     <span className="text-gray-400 text-xs">{plan.description}</span>
                   </label>
                 ))}

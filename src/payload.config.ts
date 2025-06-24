@@ -10,6 +10,8 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import MealPlans from './collections/MealPlans'
+import Subscriptions from './collections/Subscriptions'
+import Testimonials from './collections/Testimonials'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -21,7 +23,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, MealPlans],
+  collections: [Users, Media, MealPlans, Subscriptions, Testimonials],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -33,10 +35,7 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [
-    payloadCloudPlugin(),
-    // storage-adapter-placeholder
-  ],
+  plugins: [payloadCloudPlugin()],
   bin: [
     {
       scriptPath: path.resolve(dirname, 'seed.ts'),

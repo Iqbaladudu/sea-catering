@@ -70,6 +70,8 @@ export interface Config {
     users: User;
     media: Media;
     'meal-plans': MealPlan;
+    subscriptions: Subscription;
+    testimonials: Testimonial;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -79,6 +81,8 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'meal-plans': MealPlansSelect<false> | MealPlansSelect<true>;
+    subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -195,6 +199,39 @@ export interface MealPlan {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions".
+ */
+export interface Subscription {
+  id: number;
+  name: string;
+  phone: string;
+  plan: string;
+  mealTypes: {
+    type: string;
+    id?: string | null;
+  }[];
+  deliveryDays: {
+    day: string;
+    id?: string | null;
+  }[];
+  allergies?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  name: string;
+  message: string;
+  rating: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -211,6 +248,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'meal-plans';
         value: number | MealPlan;
+      } | null)
+    | ({
+        relationTo: 'subscriptions';
+        value: number | Subscription;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -327,6 +372,41 @@ export interface MealPlansSelect<T extends boolean = true> {
         answer?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions_select".
+ */
+export interface SubscriptionsSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  plan?: T;
+  mealTypes?:
+    | T
+    | {
+        type?: T;
+        id?: T;
+      };
+  deliveryDays?:
+    | T
+    | {
+        day?: T;
+        id?: T;
+      };
+  allergies?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  name?: T;
+  message?: T;
+  rating?: T;
   updatedAt?: T;
   createdAt?: T;
 }

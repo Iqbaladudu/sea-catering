@@ -35,7 +35,7 @@ export function MenuCard({ plan, handleOpenModalAction, idx }: MenuCardProps) {
           <CardHeader>
             <CardTitle className="text-xl md:text-2xl font-semibold">{plan.name}</CardTitle>
             <CardDescription className="text-lg text-primary font-bold">
-              {plan.price}
+              {plan.price} / meal
             </CardDescription>
             <p className="text-gray-600 text-base">{plan.description}</p>
           </CardHeader>
