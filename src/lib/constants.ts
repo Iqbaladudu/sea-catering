@@ -3,7 +3,7 @@ import { MealPlan, NavLink, Testimonial } from './interfaces'
 export const MEAL_PLANS: MealPlan[] = [
   {
     name: 'Diet Plan',
-    price: 'Rp 30.000 / meal',
+    price: 30000,
     description:
       'Perfect for individuals looking to try healthy meals. Pay per meal, no weekly commitment.',
     features: [
@@ -34,7 +34,7 @@ export const MEAL_PLANS: MealPlan[] = [
   },
   {
     name: 'Protein Plan',
-    price: 'Rp 40.000 / meal',
+    price: 40000,
     description: 'Ideal for families or groups up to 4 people. Pay per meal, order as needed.',
     features: [
       'Family-style portions',
@@ -62,7 +62,7 @@ export const MEAL_PLANS: MealPlan[] = [
   },
   {
     name: 'Royal Plan',
-    price: 'Rp 60.000 / meal',
+    price: 60000,
     description:
       'For busy professionals who want premium, tailored meals. Pay per meal, order anytime.',
     features: [

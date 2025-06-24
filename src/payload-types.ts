@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    'meal-plans': MealPlan;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -77,6 +78,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'meal-plans': MealPlansSelect<false> | MealPlansSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -151,6 +153,47 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "meal-plans".
+ */
+export interface MealPlan {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  features: {
+    feature: string;
+    id?: string | null;
+  }[];
+  deliveryArea?: string | null;
+  support?: string | null;
+  isRecommended?: boolean | null;
+  detailedDescription?: string | null;
+  caloriesPerMeal?: string | null;
+  menuSample?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  deliveryFrequency?: string | null;
+  dietaryOptions?:
+    | {
+        option: string;
+        id?: string | null;
+      }[]
+    | null;
+  faq?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -163,6 +206,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'meal-plans';
+        value: number | MealPlan;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -238,6 +285,48 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "meal-plans_select".
+ */
+export interface MealPlansSelect<T extends boolean = true> {
+  name?: T;
+  price?: T;
+  description?: T;
+  features?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  deliveryArea?: T;
+  support?: T;
+  isRecommended?: T;
+  detailedDescription?: T;
+  caloriesPerMeal?: T;
+  menuSample?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  deliveryFrequency?: T;
+  dietaryOptions?:
+    | T
+    | {
+        option?: T;
+        id?: T;
+      };
+  faq?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

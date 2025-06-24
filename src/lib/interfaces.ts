@@ -5,7 +5,7 @@ export interface NavLink {
 
 export interface MealPlan {
   name: string
-  price: string
+  price: number
   description: string
   features: string[]
   popular?: boolean
