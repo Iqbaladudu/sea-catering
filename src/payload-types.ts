@@ -167,6 +167,7 @@ export interface MealPlan {
   deliveryArea?: string | null;
   support?: string | null;
   isRecommended?: boolean | null;
+  popular?: boolean | null;
   detailedDescription?: string | null;
   caloriesPerMeal?: string | null;
   menuSample?:
@@ -303,6 +304,7 @@ export interface MealPlansSelect<T extends boolean = true> {
   deliveryArea?: T;
   support?: T;
   isRecommended?: T;
+  popular?: T;
   detailedDescription?: T;
   caloriesPerMeal?: T;
   menuSample?:

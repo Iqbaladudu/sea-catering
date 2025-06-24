@@ -55,6 +55,12 @@ export const MealPlans: CollectionConfig = {
       defaultValue: false,
     },
     {
+      name: 'popular',
+      type: 'checkbox',
+      label: 'Popular plan',
+      defaultValue: false,
+    },
+    {
       name: 'detailedDescription',
       type: 'textarea',
       label: 'Detailed Description',

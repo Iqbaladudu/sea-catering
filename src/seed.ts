@@ -16,6 +16,7 @@ export const script = async (config: SanitizedConfig) => {
         features: meal.features.map((arr, _key) => ({
           feature: arr,
         })),
+        popular: meal.popular,
         deliveryArea: meal.deliveryArea,
         support: meal.support,
         isRecommended: meal.isRecommended,
