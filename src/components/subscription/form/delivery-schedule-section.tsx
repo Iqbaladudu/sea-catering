@@ -47,7 +47,7 @@ export const DeliveryScheduleSection: React.FC<DeliveryScheduleSectionProps> = (
         <label className="font-medium text-gray-700 flex items-center gap-2">
           Delivery Days <span className="text-red-500">*</span>
         </label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div className="flex flex-wrap gap-2">
           {DELIVERY_DAYS.map((day) => (
             <label
               key={day.value}

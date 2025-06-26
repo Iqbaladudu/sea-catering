@@ -45,7 +45,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form, 
           </label>
           <Input
             {...form.register('phone')}
-            type="tel"
+            type="number"
             placeholder="e.g. 08123456789"
             disabled={isSubmitting}
             className="h-12 text-base border-gray-300 focus:border-primary focus:ring-primary/20 rounded-lg"
