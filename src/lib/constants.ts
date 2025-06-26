@@ -97,7 +97,7 @@ export const NAV_LINKS: NavLink[] = [
   { name: 'Contact Us', href: '/#contact' },
 ]
 
-export const SAMPLE_TESTIMONIALS: Testimonial[] = [
+export const TESTIMONIALS: Testimonial[] = [
   {
     name: 'Andrew',
     message: 'The meals are delicious, healthy, and always delivered on time. Highly recommended!',
@@ -112,5 +112,17 @@ export const SAMPLE_TESTIMONIALS: Testimonial[] = [
     name: 'David',
     message: 'Customer service is very responsive. The executive plan truly feels premium!',
     rating: 5,
+  },
+  {
+    name: 'Linda',
+    message:
+      'I appreciate the flexible subscription and the nutritionist support. Meals are always fresh!',
+    rating: 5,
+  },
+  {
+    name: 'Michael',
+    message:
+      'Affordable, tasty, and healthy. The delivery is always on time and the menu never gets boring.',
+    rating: 4,
   },
 ]

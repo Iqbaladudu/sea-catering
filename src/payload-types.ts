@@ -205,15 +205,9 @@ export interface Subscription {
   id: number;
   name: string;
   phone: string;
-  plan: string;
-  mealTypes: {
-    type: string;
-    id?: string | null;
-  }[];
-  deliveryDays: {
-    day: string;
-    id?: string | null;
-  }[];
+  plan: number | MealPlan;
+  mealTypes: ('breakfast' | 'lunch' | 'dinner')[];
+  deliverDays: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday')[];
   allergies?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -383,18 +377,8 @@ export interface SubscriptionsSelect<T extends boolean = true> {
   name?: T;
   phone?: T;
   plan?: T;
-  mealTypes?:
-    | T
-    | {
-        type?: T;
-        id?: T;
-      };
-  deliveryDays?:
-    | T
-    | {
-        day?: T;
-        id?: T;
-      };
+  mealTypes?: T;
+  deliverDays?: T;
   allergies?: T;
   updatedAt?: T;
   createdAt?: T;

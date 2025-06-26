@@ -1,10 +1,26 @@
 import type { SanitizedConfig } from 'payload'
 
 import payload from 'payload'
-import { MEAL_PLANS } from './lib/constants'
+import { MEAL_PLANS, TESTIMONIALS } from './lib/constants'
 
 export const script = async (config: SanitizedConfig) => {
   await payload.init({ config })
+  await mealPlansSeed()
+  await testimonialsSeed()
+  process.exit(0)
+}
+
+async function mealPlansSeed() {
+  const allTestimonials = await payload.find({
+    collection: 'meal-plans',
+    limit: 1000,
+  })
+  for (const testimonial of allTestimonials.docs) {
+    await payload.delete({
+      collection: 'meal-plans',
+      id: testimonial.id,
+    })
+  }
 
   for (const meal of MEAL_PLANS) {
     await payload.create({
@@ -35,6 +51,28 @@ export const script = async (config: SanitizedConfig) => {
       },
     })
   }
+
   payload.logger.info('Meal plans successfully seeded!')
-  process.exit(0)
+}
+
+async function testimonialsSeed() {
+  const allTestimonials = await payload.find({
+    collection: 'testimonials',
+    limit: 1000,
+  })
+  for (const testimonial of allTestimonials.docs) {
+    await payload.delete({
+      collection: 'testimonials',
+      id: testimonial.id,
+    })
+  }
+
+  for (const testimonial of TESTIMONIALS) {
+    await payload.create({
+      collection: 'testimonials',
+      data: testimonial,
+    })
+  }
+
+  payload.logger.info('Testimonials successfully seeded!')
 }
