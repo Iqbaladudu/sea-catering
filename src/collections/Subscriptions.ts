@@ -21,34 +21,37 @@ const Subscriptions: CollectionConfig = {
     },
     {
       name: 'plan',
-      type: 'text',
+      type: 'relationship',
       required: true,
       label: 'Selected Plan',
+      relationTo: 'meal-plans',
     },
     {
       name: 'mealTypes',
-      type: 'array',
+      type: 'select',
       required: true,
       label: 'Meal Types',
-      fields: [
-        {
-          name: 'type',
-          type: 'text',
-          required: true,
-        },
+      hasMany: true,
+      options: [
+        { label: 'Breakfast', value: 'breakfast' },
+        { label: 'Lunch', value: 'lunch' },
+        { label: 'Dinner', value: 'dinner' },
       ],
     },
     {
-      name: 'deliveryDays',
-      type: 'array',
+      name: 'deliverDays',
+      type: 'select',
       required: true,
-      label: 'Delivery Days',
-      fields: [
-        {
-          name: 'day',
-          type: 'text',
-          required: true,
-        },
+      label: 'Deliver Days',
+      hasMany: true, // Allows multiple selections
+      options: [
+        { label: 'Monday', value: 'monday' },
+        { label: 'Tuesday', value: 'tuesday' },
+        { label: 'Wednesday', value: 'wednesday' },
+        { label: 'Thursday', value: 'thursday' },
+        { label: 'Friday', value: 'friday' },
+        { label: 'Saturday', value: 'saturday' },
+        { label: 'Sunday', value: 'sunday' },
       ],
     },
     {

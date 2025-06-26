@@ -9,11 +9,11 @@ interface MenuWrapperProps {
 }
 
 export default function MenuWrapper({ handleOpenModalAction }: MenuWrapperProps) {
-  const { data: menu, error, isLoading } = useSWR<MealPlan[]>('/api/menu', fetcher)
+  const { data: menu } = useSWR<MealPlan[]>('/api/menu', fetcher)
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cos-3">
       {menu?.map((plan, idx) => (
-        <MenuCard plan={plan} handleOpenModalAction={handleOpenModalAction} idx={idx} />
+        <MenuCard key={idx} plan={plan} handleOpenModalAction={handleOpenModalAction} idx={idx} />
       ))}
     </div>
   )

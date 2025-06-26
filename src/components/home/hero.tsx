@@ -7,11 +7,7 @@ export default function Hero() {
   return (
     <section className="w-full relative h-screen flex flex-col items-center justify-center px-4 py-12 md:py-20">
       <div className="absolute w-full h-screen z-0 inset-0">
-        <Image
-          src={HeroImg}
-          className="h-screen w-screen object-cover grayscale-100"
-          alt="Hero Background"
-        />
+        <Image src={HeroImg} className="h-screen w-screen object-cover" alt="Hero Background" />
         <div className="absolute inset-0 backdrop-blur-xs" />
       </div>
       <div className="max-w-2xl relative text-center space-y-6">
