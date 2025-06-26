@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { SubscriptionPlans } from '@/components/subscription/plans'
 import { SubscriptionForm } from '@/components/subscription/form'
 
 const SubscriptionPage: React.FC = () => (
@@ -13,7 +12,6 @@ const SubscriptionPage: React.FC = () => (
         and expert nutritionist support at any time!
       </p>
     </section>
-    <SubscriptionPlans />
     <section className="w-full max-w-xl mt-16">
       <SubscriptionForm />
     </section>

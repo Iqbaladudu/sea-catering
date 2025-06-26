@@ -7,7 +7,7 @@ import {
   DialogTitle as ModalTitle,
   DialogDescription as ModalDescription,
 } from '@/components/ui/dialog'
-import { MealPlan } from '@/lib/interfaces'
+import { MealPlan } from '@/payload-types'
 import { CheckCircle2 } from 'lucide-react'
 
 interface MenuDialogProps {
@@ -30,7 +30,7 @@ export default function MenuDialog({
               <ModalTitle className="text-2xl md:text-3xl">{selectedPlan.name}</ModalTitle>
               <ModalDescription>
                 <span className="block text-primary font-bold text-lg mb-1">
-                  {selectedPlan.price}
+                  Rp{selectedPlan.price.toLocaleString('id-ID')} / meal
                 </span>
                 <span className="block text-gray-700 mb-2">{selectedPlan.description}</span>
               </ModalDescription>
@@ -38,9 +38,9 @@ export default function MenuDialog({
             <div className="mb-4">
               <ul className="flex flex-col gap-2">
                 {selectedPlan.features?.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2 text-gray-700 text-base">
+                  <li key={feature.id} className="flex items-center gap-2 text-gray-700 text-base">
                     <CheckCircle2 className="text-green-500 w-5 h-5" />
-                    {feature}
+                    {feature.feature}
                   </li>
                 ))}
               </ul>
@@ -84,7 +84,7 @@ export default function MenuDialog({
                 <span className="font-semibold text-gray-800">Sample menu:</span>
                 <ul className="list-disc list-inside text-gray-700">
                   {selectedPlan.menuSample.map((item) => (
-                    <li key={item}>{item}</li>
+                    <li key={item.id}>{item.item}</li>
                   ))}
                 </ul>
               </div>
@@ -92,15 +92,15 @@ export default function MenuDialog({
             {selectedPlan.dietaryOptions && (
               <div className="mb-2">
                 <span className="font-semibold text-gray-800">Dietary options:</span>{' '}
-                {selectedPlan.dietaryOptions.join(', ')}
+                {selectedPlan.dietaryOptions.map((opt) => opt.option).join(', ')}
               </div>
             )}
             {selectedPlan.faq && (
               <div className="mb-2">
                 <span className="font-semibold text-gray-800">FAQ:</span>
                 <ul className="mt-1 space-y-1">
-                  {selectedPlan.faq.map((item, i) => (
-                    <li key={i}>
+                  {selectedPlan.faq.map((item) => (
+                    <li key={item.id}>
                       <span className="font-semibold">{item.question}</span>
                       <br />
                       <span className="text-gray-700">{item.answer}</span>

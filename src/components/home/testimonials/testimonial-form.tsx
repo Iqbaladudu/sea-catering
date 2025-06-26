@@ -24,6 +24,17 @@ import submitTestimonialAction from '@/actions/submit-testimonial.action'
 export default function TestimonialForm() {
   const submitTestomonialMutation = useMutation({
     mutationFn: submitTestimonialAction,
+    onSuccess: (data) => {
+      if (data.success) {
+        form.reset()
+        toast.success('Testimonial submitted successfully!')
+      } else {
+        toast.error(data.error || 'Failed to submit testimonial')
+      }
+    },
+    onError: (_error) => {
+      toast.error('Failed to submit the form. Please try again.')
+    },
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -32,15 +43,7 @@ export default function TestimonialForm() {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      submitTestomonialMutation.mutate(values)
-      if (submitTestomonialMutation.isSuccess) {
-        form.reset()
-        toast('Berhasil')
-      }
-    } catch {
-      toast('Failed to submit the form. Please try again.')
-    }
+    submitTestomonialMutation.mutate(values)
   }
 
   return (

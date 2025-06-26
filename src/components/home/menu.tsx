@@ -1,18 +1,20 @@
 'use client'
 
 import * as React from 'react'
-
-import { MEAL_PLANS } from '@/lib/constants'
+import useSWR from 'swr'
+import { fetcher } from '@/lib/utils'
+import { MealPlan } from '@/payload-types'
 import MenuDialog from './menu-dialog'
 import MenuWrapper from './menu-wrapper'
 
 export const Menu: React.FC = () => {
   const [selectedIdx, setSelectedIdx] = React.useState<number | null>(null)
+  const { data: menu } = useSWR<MealPlan[]>('/api/menu', fetcher)
 
   const handleOpenModal = (idx: number) => setSelectedIdx(idx)
   const handleCloseModal = () => setSelectedIdx(null)
 
-  const selectedPlan = selectedIdx !== null ? MEAL_PLANS[selectedIdx] : null
+  const selectedPlan = selectedIdx !== null && menu ? menu[selectedIdx] : null
 
   return (
     <section id="menu" className="container max-w-7xl py-12 px-4">

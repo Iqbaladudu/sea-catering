@@ -7,22 +7,21 @@ import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 export default function TestimonialCard() {
-  const testimonials_query = useQuery({
+  const testimonials_query = useQuery<Testimonial[]>({
     queryKey: ['testimonials'],
     queryFn: async () => {
       const res = await fetch('/api/testimonials')
       if (!res.ok) throw new Error('Failed to fetch testimonials')
-      return await res.json()
+      return res.json() as Promise<Testimonial[]>
     },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   })
 
-  const testimonials = testimonials_query.data?.data ?? []
+  const testimonials = testimonials_query.data ?? []
   const [current, setCurrent] = React.useState(0)
   const [paused, setPaused] = React.useState(false)
   const [dragging, setDragging] = React.useState(false)
-
 
   React.useEffect(() => {
     if (current >= testimonials.length) setCurrent(0)
@@ -114,81 +113,53 @@ export default function TestimonialCard() {
               aria-live="polite"
             >
               {testimonials_query.isSuccess && testimonials && (
-                <div className="relative w-full">
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/30 via-white to-secondary/20 blur-[2px] opacity-80 z-0" />
-                  <Card className="relative w-full rounded-3xl border-0 shadow-xl bg-white/95 backdrop-blur-lg min-h-[210px] flex flex-col justify-between px-6 py-7 z-10">
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className="flex-shrink-0">
-                        <div className="w-14 h-14 rounded-full border-4 border-primary/40 bg-gradient-to-tr from-primary/20 to-secondary/20 flex items-center justify-center shadow-md">
-                          {/* Avatar: use image if available, else initials */}
-                          {testimonials[current].avatar ? (
-                            <img
-                              src={testimonials[current].avatar}
-                              alt={testimonials[current].name}
-                              className="w-12 h-12 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-xl font-bold text-primary">
-                              {testimonials[current].name
-                                .split(' ')
-                                .map((n: string) => n[0])
-                                .join('')
-                                .slice(0, 2)
-                                .toUpperCase()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg md:text-xl font-semibold text-gray-900">
-                          {testimonials[current].name}
-                        </CardTitle>
-                        <div className="flex gap-0.5 mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              size={18}
-                              className={
-                                i < testimonials[current].rating
-                                  ? 'text-yellow-400 fill-yellow-300 drop-shadow'
-                                  : 'text-gray-300'
-                              }
-                              aria-label={i < testimonials[current].rating ? 'star filled' : 'star'}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <CardContent className="p-0">
-                      <p className="text-gray-700 text-base md:text-lg italic min-h-[60px] leading-relaxed">
-                        “{testimonials[current].message}”
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
+                <Card className="w-full shadow-lg rounded-2xl bg-white min-h-[170px] flex flex-col justify-between">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                      <span className="font-semibold">{testimonials[current].name}</span>
+                      <span className="flex gap-0.5 ml-2">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            size={18}
+                            className={
+                              i < testimonials[current].rating
+                                ? 'text-yellow-400 fill-yellow-300'
+                                : 'text-gray-300'
+                            }
+                            aria-label={i < testimonials[current].rating ? 'star filled' : 'star'}
+                          />
+                        ))}
+                      </span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 text-base md:text-lg italic min-h-[60px]">
+                      {testimonials[current].message}
+                    </p>
+                  </CardContent>
+                </Card>
               )}
             </motion.div>
           </AnimatePresence>
         </div>
-        <div className="flex items-center gap-3 mt-5">
+        <div className="flex items-center gap-3 mt-4">
           <Button
             variant="ghost"
             size="icon"
             aria-label="Previous"
             onClick={prevSlide}
-            className="rounded-full border border-gray-200 shadow hover:bg-primary/10 transition"
+            className="rounded-full"
             disabled={testimonials.length <= 1}
           >
             <ChevronLeft size={24} />
           </Button>
           <div className="flex gap-2">
-            {testimonials.map((_, idx) => (
+            {testimonials.map((_: Testimonial, idx: number) => (
               <button
                 key={idx}
-                className={`w-3 h-3 rounded-full transition-all duration-200 border-2 ${
-                  idx === current
-                    ? 'bg-primary border-primary shadow'
-                    : 'bg-gray-200 border-gray-300'
+                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                  idx === current ? 'bg-primary' : 'bg-gray-300'
                 }`}
                 aria-label={`Go to testimonial ${idx + 1}`}
                 onClick={() => setCurrent(idx)}
@@ -201,13 +172,13 @@ export default function TestimonialCard() {
             size="icon"
             aria-label="Next"
             onClick={nextSlide}
-            className="rounded-full border border-gray-200 shadow hover:bg-primary/10 transition"
+            className="rounded-full"
             disabled={testimonials.length <= 1}
           >
             <ChevronRight size={24} />
           </Button>
         </div>
-        <div className="text-xs text-gray-400 mt-3">Swipe or use arrows to navigate</div>
+        <div className="text-xs text-gray-400 mt-2">Swipe or use arrows to navigate</div>
       </div>
     </>
   )
