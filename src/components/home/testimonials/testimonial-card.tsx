@@ -7,18 +7,18 @@ import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 export default function TestimonialCard() {
-  const testimonials_query = useQuery<Testimonial[]>({
+  const testimonials_query = useQuery({
     queryKey: ['testimonials'],
     queryFn: async () => {
       const res = await fetch('/api/testimonials')
       if (!res.ok) throw new Error('Failed to fetch testimonials')
-      return res.json() as Promise<Testimonial[]>
+      return res.json()
     },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   })
 
-  const testimonials = testimonials_query.data ?? []
+  const testimonials = testimonials_query.data?.data ?? []
   const [current, setCurrent] = React.useState(0)
   const [paused, setPaused] = React.useState(false)
   const [dragging, setDragging] = React.useState(false)
