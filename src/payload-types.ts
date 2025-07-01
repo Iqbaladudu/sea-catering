@@ -256,7 +256,6 @@ export interface Testimonial {
 export interface Customer {
   id: number;
   name: string;
-  password: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -266,6 +265,7 @@ export interface Customer {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -457,7 +457,6 @@ export interface TestimonialsSelect<T extends boolean = true> {
  */
 export interface CustomersSelect<T extends boolean = true> {
   name?: T;
-  password?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

@@ -150,7 +150,7 @@ export const Contact: React.FC = () => {
 
               <CardContent className="relative space-y-4 px-6 pb-8">
                 <CardDescription className="text-gray-600 text-center leading-relaxed">
-                  Send us a message and we'll get back to you soon.
+                  Send us a message and we&apos;ll get back to you soon.
                 </CardDescription>
 
                 {submitted ? (

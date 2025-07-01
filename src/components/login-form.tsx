@@ -7,8 +7,67 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
 import { Mail, Lock, User } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
+import { useMutation } from '@tanstack/react-query'
+import loginAction from '@/actions/login.action'
+import { loginUser, redirectToHome } from '@/lib/auth'
+import { loginSchema, type LoginFormData } from '@/lib/validations'
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  const loginMutation = useMutation({
+    mutationFn: loginAction,
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success(result.message || 'Login successful!')
+        form.reset()
+        console.log('Login successful:', result.customer)
+
+        // Store authentication data using auth utilities
+        if (result.customer && result.token) {
+          loginUser(result.customer, result.token)
+        }
+
+        // Clear any previous errors
+        form.clearErrors()
+
+        // Redirect to home page
+        setTimeout(() => {
+          redirectToHome()
+        }, 1000) // Small delay to show success message
+      } else {
+        toast.error(result.error || 'Login failed')
+        console.error('Login error:', result.error)
+
+        // If it's an invalid credentials error, focus on email field
+        if (result.error?.includes('Invalid email or password')) {
+          form.setFocus('email')
+          form.setError('email', {
+            type: 'manual',
+            message: 'Invalid email or password',
+          })
+        }
+      }
+    },
+    onError: (error) => {
+      console.error('Login failed:', error)
+      toast.error('An unexpected error occurred. Please try again.')
+    },
+  })
+
+  const onSubmit = (data: LoginFormData) => {
+    loginMutation.mutate(data)
+  }
+
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <motion.div
@@ -37,7 +96,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
           </CardHeader>
 
           <CardContent className="relative space-y-4 px-6 pb-8">
-            <form>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-3">
                   <Label
@@ -51,9 +110,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     id="email"
                     type="email"
                     placeholder="m@example.com"
-                    required
-                    className="bg-gray-50 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl text-base"
+                    {...form.register('email')}
+                    disabled={loginMutation.isPending}
+                    className={cn(
+                      'bg-gray-50 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl text-base min-h-[44px]',
+                      form.formState.errors.email &&
+                        'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+                    )}
                   />
+                  {form.formState.errors.email && (
+                    <p className="text-red-500 text-sm">{form.formState.errors.email.message}</p>
+                  )}
                 </div>
                 <div className="grid gap-3">
                   <div className="flex items-center">
@@ -74,23 +141,39 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   <Input
                     id="password"
                     type="password"
-                    required
-                    className="bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl text-base"
+                    {...form.register('password')}
+                    disabled={loginMutation.isPending}
+                    className={cn(
+                      'bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl text-base min-h-[44px]',
+                      form.formState.errors.password &&
+                        'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+                    )}
                   />
+                  {form.formState.errors.password && (
+                    <p className="text-red-500 text-sm">{form.formState.errors.password.message}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-3">
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold text-base min-h-[44px] rounded-xl"
+                    disabled={loginMutation.isPending || !form.formState.isValid}
+                    className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold text-base min-h-[44px] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
-                    Login
+                    {loginMutation.isPending ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Signing In...
+                      </div>
+                    ) : (
+                      'Login'
+                    )}
                   </Button>
                 </div>
               </div>
               <div className="mt-4 text-center text-sm">
                 <span className="text-gray-600">Don&apos;t have an account?</span>{' '}
                 <a
-                  href="#"
+                  href="/daftar"
                   className="text-emerald-600 hover:text-emerald-700 underline underline-offset-4 font-medium transition-colors duration-200"
                 >
                   Sign up

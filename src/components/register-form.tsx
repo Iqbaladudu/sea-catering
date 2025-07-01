@@ -6,99 +6,90 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
-import { Mail, Lock, User, UserPlus } from 'lucide-react'
+import { Mail, Lock, User, UserPlus, CheckCircle } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import registerAction from '@/actions/register.action'
+import {
+  registerFormSchema,
+  type RegisterFormData,
+  type RegisterFormWithConfirmData,
+} from '@/lib/validations'
 
-interface RegisterFormData {
-  name: string
-  email: string
-  password: string
-  confirmPassword: string
-}
+type FormData = RegisterFormWithConfirmData
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<'div'>) {
-  const [formData, setFormData] = useState<RegisterFormData>({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+  const [isSuccess, setIsSuccess] = useState(false)
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
   })
-  const [errors, setErrors] = useState<Partial<RegisterFormData>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    // Clear error when user starts typing
-    if (errors[name as keyof RegisterFormData]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }))
-    }
-  }
+  const registerMutation = useMutation({
+    mutationFn: registerAction,
+    onSuccess: (result) => {
+      if (result.success) {
+        setIsSuccess(true)
+        form.reset()
+        toast.success(result.message || 'Account created successfully!')
+        console.log('Registration successful:', result.customer)
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<RegisterFormData> = {}
+        // Clear any previous errors
+        form.clearErrors()
+      } else {
+        toast.error(result.error || 'Failed to create account')
+        console.error('Registration error:', result.error)
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'Full name is required'
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters'
-    }
+        // If it's an email already exists error, focus on email field
+        if (result.error?.includes('email already exists')) {
+          form.setFocus('email')
+          form.setError('email', {
+            type: 'manual',
+            message: 'An account with this email already exists',
+          })
+        }
+      }
+    },
+    onError: (error) => {
+      toast.error('An unexpected error occurred. Please try again.')
+      console.error('Registration failed:', error)
+    },
+  })
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address'
-    }
+  const onSubmit = (data: FormData) => {
+    // Extract only the fields needed for the register action
+    const { confirmPassword, ...registerData }: { confirmPassword: string } & RegisterFormData =
+      data
 
-    if (!formData.password) {
-      newErrors.password = 'Password is required'
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters'
-    } else if (
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(formData.password)
-    ) {
-      newErrors.password =
-        'Password must include uppercase, lowercase, number, and special character'
-    }
+    console.log('Form data received:', {
+      name: data.name,
+      email: data.email,
+      password: data.password ? '[REDACTED]' : 'undefined',
+      confirmPassword: data.confirmPassword ? '[REDACTED]' : 'undefined',
+    })
+    console.log('Submitting registration data:', {
+      name: registerData.name,
+      email: registerData.email,
+      password: registerData.password ? '[REDACTED]' : 'undefined',
+    })
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password'
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) {
+    // Validate that password is not empty before sending
+    if (!registerData.password || registerData.password.trim() === '') {
+      console.error('Password is empty or undefined')
+      toast.error('Password is required')
       return
     }
 
-    setIsSubmitting(true)
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // Handle successful registration here
-      console.log('Registration successful:', formData)
-
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      })
-    } catch (error) {
-      console.error('Registration failed:', error)
-    } finally {
-      setIsSubmitting(false)
-    }
+    registerMutation.mutate(registerData)
   }
 
   return (
@@ -129,170 +120,209 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
           </CardHeader>
 
           <CardContent className="relative space-y-3 px-6 pb-6">
-            <form onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-4">
-                {/* Name and Email Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label
-                      htmlFor="name"
-                      className="text-gray-900 font-semibold text-sm flex items-center gap-2"
-                    >
-                      <User className="w-4 h-4 text-emerald-600" />
-                      Full Name
-                    </Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      disabled={isSubmitting}
-                      required
-                      className={cn(
-                        'bg-gray-50 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-lg text-sm min-h-[40px]',
-                        errors.name && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
-                      )}
-                    />
-                    {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label
-                      htmlFor="email"
-                      className="text-gray-900 font-semibold text-sm flex items-center gap-2"
-                    >
-                      <Mail className="w-4 h-4 text-blue-600" />
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      disabled={isSubmitting}
-                      required
-                      className={cn(
-                        'bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg text-sm min-h-[40px]',
-                        errors.email && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
-                      )}
-                    />
-                    {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
-                  </div>
+            {isSuccess ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-500" />
                 </div>
-
-                {/* Password and Confirm Password Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label
-                      htmlFor="password"
-                      className="text-gray-900 font-semibold text-sm flex items-center gap-2"
-                    >
-                      <Lock className="w-4 h-4 text-purple-600" />
-                      Password
-                    </Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="Create a strong password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      disabled={isSubmitting}
-                      required
-                      className={cn(
-                        'bg-gray-50 border-gray-200 focus:border-purple-500 focus:ring-purple-500/20 rounded-lg text-sm min-h-[40px]',
-                        errors.password &&
-                          'border-red-500 focus:border-red-500 focus:ring-red-500/20',
-                      )}
-                    />
-                    {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label
-                      htmlFor="confirmPassword"
-                      className="text-gray-900 font-semibold text-sm flex items-center gap-2"
-                    >
-                      <Lock className="w-4 h-4 text-orange-600" />
-                      Confirm Password
-                    </Label>
-                    <Input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      placeholder="Confirm your password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      disabled={isSubmitting}
-                      required
-                      className={cn(
-                        'bg-gray-50 border-gray-200 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg text-sm min-h-[40px]',
-                        errors.confirmPassword &&
-                          'border-red-500 focus:border-red-500 focus:ring-red-500/20',
-                      )}
-                    />
-                    {errors.confirmPassword && (
-                      <p className="text-red-500 text-xs">{errors.confirmPassword}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Password Requirements */}
-                <p className="text-xs text-gray-500 -mt-2">
-                  Password must include uppercase, lowercase, number, and special character
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Welcome to SEA Catering!
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Your account has been created successfully. You can now sign in to start your
+                  healthy eating journey with our delicious and healthy meal plans.
                 </p>
-
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold text-sm min-h-[40px] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Creating Account...
-                    </div>
-                  ) : (
-                    'Create Account'
-                  )}
-                </Button>
-
-                {/* Terms and Login Link */}
-                <div className="text-center space-y-2">
-                  <div className="text-xs text-gray-500">
-                    By creating an account, you agree to our{' '}
-                    <a
-                      href="#"
-                      className="text-emerald-600 hover:text-emerald-700 underline underline-offset-2 font-medium transition-colors duration-200"
-                    >
-                      Terms of Service
-                    </a>{' '}
-                    and{' '}
-                    <a
-                      href="#"
-                      className="text-emerald-600 hover:text-emerald-700 underline underline-offset-2 font-medium transition-colors duration-200"
-                    >
-                      Privacy Policy
-                    </a>
-                  </div>
-
-                  <div className="text-sm">
-                    <span className="text-gray-600">Already have an account?</span>{' '}
-                    <a
-                      href="/masuk"
-                      className="text-emerald-600 hover:text-emerald-700 underline underline-offset-4 font-medium transition-colors duration-200"
-                    >
-                      Sign in
-                    </a>
-                  </div>
+                <div className="space-y-3">
+                  <Button
+                    asChild
+                    className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                  >
+                    <a href="/masuk">Sign In Now</a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="w-full border-emerald-300 text-emerald-600 hover:bg-emerald-50"
+                  >
+                    <a href="/">Explore Meal Plans</a>
+                  </Button>
                 </div>
               </div>
-            </form>
+            ) : (
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="flex flex-col gap-4">
+                  {/* Name and Email Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label
+                        htmlFor="name"
+                        className="text-gray-900 font-semibold text-sm flex items-center gap-2"
+                      >
+                        <User className="w-4 h-4 text-emerald-600" />
+                        Full Name
+                      </Label>
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        {...form.register('name')}
+                        disabled={registerMutation.isPending}
+                        className={cn(
+                          'bg-gray-50 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-lg text-sm min-h-[40px]',
+                          form.formState.errors.name &&
+                            'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+                        )}
+                      />
+                      {form.formState.errors.name && (
+                        <p className="text-red-500 text-xs">{form.formState.errors.name.message}</p>
+                      )}
+                    </div>
+
+                    <div className="grid gap-2">
+                      <Label
+                        htmlFor="email"
+                        className="text-gray-900 font-semibold text-sm flex items-center gap-2"
+                      >
+                        <Mail className="w-4 h-4 text-blue-600" />
+                        Email
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="m@example.com"
+                        {...form.register('email')}
+                        disabled={registerMutation.isPending}
+                        className={cn(
+                          'bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg text-sm min-h-[40px]',
+                          form.formState.errors.email &&
+                            'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+                        )}
+                      />
+                      {form.formState.errors.email && (
+                        <p className="text-red-500 text-xs">
+                          {form.formState.errors.email.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Password and Confirm Password Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label
+                        htmlFor="password"
+                        className="text-gray-900 font-semibold text-sm flex items-center gap-2"
+                      >
+                        <Lock className="w-4 h-4 text-purple-600" />
+                        Password
+                      </Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="Create a strong password"
+                        {...form.register('password')}
+                        disabled={registerMutation.isPending}
+                        className={cn(
+                          'bg-gray-50 border-gray-200 focus:border-purple-500 focus:ring-purple-500/20 rounded-lg text-sm min-h-[40px]',
+                          form.formState.errors.password &&
+                            'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+                        )}
+                      />
+                      {form.formState.errors.password && (
+                        <p className="text-red-500 text-xs">
+                          {form.formState.errors.password.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="grid gap-2">
+                      <Label
+                        htmlFor="confirmPassword"
+                        className="text-gray-900 font-semibold text-sm flex items-center gap-2"
+                      >
+                        <Lock className="w-4 h-4 text-orange-600" />
+                        Confirm Password
+                      </Label>
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="Confirm your password"
+                        {...form.register('confirmPassword')}
+                        disabled={registerMutation.isPending}
+                        className={cn(
+                          'bg-gray-50 border-gray-200 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg text-sm min-h-[40px]',
+                          form.formState.errors.confirmPassword &&
+                            'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+                        )}
+                      />
+                      {form.formState.errors.confirmPassword && (
+                        <p className="text-red-500 text-xs">
+                          {form.formState.errors.confirmPassword.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Password Requirements */}
+                  <div className="text-xs text-gray-500 -mt-2">
+                    <p>Password requirements:</p>
+                    <ul className="list-disc list-inside ml-2 mt-1 space-y-0.5">
+                      <li>At least 8 characters long</li>
+                      <li>One uppercase letter (A-Z)</li>
+                      <li>One lowercase letter (a-z)</li>
+                      <li>One number (0-9)</li>
+                      <li>One special character (@$!%*?&)</li>
+                    </ul>
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    disabled={registerMutation.isPending || !form.formState.isValid}
+                    className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold text-sm min-h-[40px] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  >
+                    {registerMutation.isPending ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Creating Account...
+                      </div>
+                    ) : (
+                      'Create Account'
+                    )}
+                  </Button>
+
+                  {/* Terms and Login Link */}
+                  <div className="text-center space-y-2">
+                    <div className="text-xs text-gray-500">
+                      By creating an account, you agree to our{' '}
+                      <a
+                        href="#"
+                        className="text-emerald-600 hover:text-emerald-700 underline underline-offset-2 font-medium transition-colors duration-200"
+                      >
+                        Terms of Service
+                      </a>{' '}
+                      and{' '}
+                      <a
+                        href="#"
+                        className="text-emerald-600 hover:text-emerald-700 underline underline-offset-2 font-medium transition-colors duration-200"
+                      >
+                        Privacy Policy
+                      </a>
+                    </div>
+
+                    <div className="text-sm">
+                      <span className="text-gray-600">Already have an account?</span>{' '}
+                      <a
+                        href="/masuk"
+                        className="text-emerald-600 hover:text-emerald-700 underline underline-offset-4 font-medium transition-colors duration-200"
+                      >
+                        Sign in here
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            )}
           </CardContent>
         </Card>
       </motion.div>
