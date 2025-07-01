@@ -42,7 +42,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
         // Redirect to home page
         setTimeout(() => {
-          redirectToHome()
+          // redirectToHome()
         }, 1000) // Small delay to show success message
       } else {
         toast.error(result.error || 'Login failed')

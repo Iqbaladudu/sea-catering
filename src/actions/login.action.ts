@@ -3,6 +3,7 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { loginSchema, type LoginFormData, getValidationError } from '@/lib/validations'
+import { cookies } from 'next/headers'
 
 const payload = await getPayload({ config })
 
@@ -27,6 +28,13 @@ export default async function loginAction(data: LoginFormData) {
     })
 
     if (result.user) {
+      // Set the authentication token in a secure, HTTP-only cookie
+      const cookieStore = cookies()
+      cookieStore.set('payload-token', result.token, {
+        httpOnly: true,
+        secure: true,
+      })
+
       // Serialize the customer to ensure it's a plain object
       const serializedCustomer = {
         id: result.user.id,
