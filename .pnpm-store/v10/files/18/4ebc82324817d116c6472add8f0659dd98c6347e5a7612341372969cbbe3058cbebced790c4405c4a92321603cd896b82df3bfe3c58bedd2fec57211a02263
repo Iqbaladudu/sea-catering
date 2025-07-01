@@ -1,0 +1,11 @@
+import type { FolderOrDocument } from 'payload/shared';
+export declare function getShiftSelection({ selectFromIndex, selectToIndex, }: {
+    selectFromIndex: number;
+    selectToIndex: number;
+}): Set<number>;
+export declare function getMetaSelection({ currentSelection, toggleIndex, }: {
+    currentSelection: Set<number>;
+    toggleIndex: number;
+}): Set<number>;
+export declare function groupItemIDsByRelation(items: FolderOrDocument[]): Record<string, (string | number)[]>;
+//# sourceMappingURL=selection.d.ts.map

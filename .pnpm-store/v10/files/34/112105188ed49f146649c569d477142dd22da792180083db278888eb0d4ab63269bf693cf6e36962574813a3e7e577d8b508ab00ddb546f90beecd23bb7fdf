@@ -1,0 +1,128 @@
+'use client';
+
+import { c as _c } from "react/compiler-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useModal } from '@faceless-ui/modal';
+import React, { useState } from 'react';
+import { useAuth } from '../../providers/Auth/index.js';
+import { EditDepthProvider } from '../../providers/EditDepth/index.js';
+import { SelectAllStatus, useSelection } from '../../providers/Selection/index.js';
+import { useTranslation } from '../../providers/Translation/index.js';
+import { Drawer } from '../Drawer/index.js';
+import './index.scss';
+import { ListSelectionButton } from '../ListSelection/index.js';
+import { EditManyDrawerContent } from './DrawerContent.js';
+export const baseClass = 'edit-many';
+export const EditMany = props => {
+  const $ = _c(5);
+  const {
+    count,
+    selectAll,
+    selected
+  } = useSelection();
+  let t0;
+  if ($[0] !== count || $[1] !== props || $[2] !== selectAll || $[3] !== selected) {
+    t0 = _jsx(EditMany_v4, {
+      ...props,
+      count,
+      ids: Array.from(selected.keys()),
+      selectAll: selectAll === SelectAllStatus.AllAvailable
+    });
+    $[0] = count;
+    $[1] = props;
+    $[2] = selectAll;
+    $[3] = selected;
+    $[4] = t0;
+  } else {
+    t0 = $[4];
+  }
+  return t0;
+};
+export const EditMany_v4 = t0 => {
+  const $ = _c(14);
+  const {
+    collection,
+    count,
+    ids,
+    selectAll
+  } = t0;
+  const {
+    permissions
+  } = useAuth();
+  const {
+    openModal
+  } = useModal();
+  const {
+    t
+  } = useTranslation();
+  let t1;
+  if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
+    t1 = [];
+    $[0] = t1;
+  } else {
+    t1 = $[0];
+  }
+  const [selectedFields, setSelectedFields] = useState(t1);
+  const collectionPermissions = permissions?.collections?.[collection.slug];
+  const drawerSlug = `edit-${collection.slug}`;
+  if (count === 0 || !collectionPermissions?.update) {
+    return null;
+  }
+  let t2;
+  if ($[1] === Symbol.for("react.memo_cache_sentinel")) {
+    t2 = [baseClass, `${baseClass}__toggle`].filter(Boolean);
+    $[1] = t2;
+  } else {
+    t2 = $[1];
+  }
+  let t3;
+  if ($[2] !== collection || $[3] !== count || $[4] !== drawerSlug || $[5] !== ids || $[6] !== openModal || $[7] !== selectAll || $[8] !== selectedFields || $[9] !== t) {
+    let t4;
+    if ($[11] !== drawerSlug || $[12] !== openModal) {
+      t4 = () => {
+        openModal(drawerSlug);
+        setSelectedFields([]);
+      };
+      $[11] = drawerSlug;
+      $[12] = openModal;
+      $[13] = t4;
+    } else {
+      t4 = $[13];
+    }
+    t3 = _jsxs("div", {
+      className: t2.join(" "),
+      children: [_jsx(ListSelectionButton, {
+        "aria-label": t("general:edit"),
+        onClick: t4,
+        children: t("general:edit")
+      }), _jsx(EditDepthProvider, {
+        children: _jsx(Drawer, {
+          Header: null,
+          slug: drawerSlug,
+          children: _jsx(EditManyDrawerContent, {
+            collection,
+            count,
+            drawerSlug,
+            ids,
+            selectAll,
+            selectedFields,
+            setSelectedFields
+          })
+        })
+      })]
+    });
+    $[2] = collection;
+    $[3] = count;
+    $[4] = drawerSlug;
+    $[5] = ids;
+    $[6] = openModal;
+    $[7] = selectAll;
+    $[8] = selectedFields;
+    $[9] = t;
+    $[10] = t3;
+  } else {
+    t3 = $[10];
+  }
+  return t3;
+};
+//# sourceMappingURL=index.js.map

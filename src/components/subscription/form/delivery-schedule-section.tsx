@@ -20,19 +20,29 @@ const DELIVERY_DAYS = [
   { label: 'Sunday', value: 'sunday' },
 ] as const
 
+type DeliveryDay =
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday'
+  | 'sunday'
+
 export const DeliveryScheduleSection: React.FC<DeliveryScheduleSectionProps> = ({
   form,
   isSubmitting,
 }) => {
   const handleDeliveryDayChange = (dayValue: string) => {
     const current = form.getValues('deliverDays')
-    if (current.includes(dayValue as any)) {
+    const deliveryDay = dayValue as DeliveryDay
+    if (current.includes(deliveryDay)) {
       form.setValue(
         'deliverDays',
-        current.filter((v: string) => v !== dayValue),
+        current.filter((v: DeliveryDay) => v !== deliveryDay),
       )
     } else {
-      form.setValue('deliverDays', [...current, dayValue as any])
+      form.setValue('deliverDays', [...current, deliveryDay])
     }
   }
 

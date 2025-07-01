@@ -1,0 +1,16 @@
+export function isColumnActive({
+  accessor,
+  activeColumnsIndices,
+  columnPreference,
+  columns
+}) {
+  if (columnPreference) {
+    return columnPreference.active;
+  } else if (columns && Array.isArray(columns) && columns.length > 0) {
+    return Boolean(columns.find(column => column.accessor === accessor)?.active);
+  } else if (activeColumnsIndices.length < 4) {
+    return true;
+  }
+  return false;
+}
+//# sourceMappingURL=isColumnActive.js.map

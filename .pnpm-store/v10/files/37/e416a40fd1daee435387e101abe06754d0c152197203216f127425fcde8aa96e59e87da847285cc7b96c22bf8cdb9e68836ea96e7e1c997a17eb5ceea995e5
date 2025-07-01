@@ -1,0 +1,10 @@
+import type { ClientCollectionConfig } from 'payload';
+import './index.scss';
+type ListFolderPillsProps = {
+    readonly collectionConfig: ClientCollectionConfig;
+    readonly folderCollectionSlug: string;
+    readonly viewType: 'folders' | 'list';
+};
+export declare function ListFolderPills({ collectionConfig, folderCollectionSlug, viewType, }: ListFolderPillsProps): import("react").JSX.Element;
+export {};
+//# sourceMappingURL=index.d.ts.map

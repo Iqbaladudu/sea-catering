@@ -1,0 +1,467 @@
+'use client';
+
+import { jsx as _jsx } from "react/jsx-runtime";
+import { useRouter, useSearchParams } from 'next/navigation.js';
+import { extractID, formatAdminURL, formatFolderOrDocumentItem } from 'payload/shared';
+import * as qs from 'qs-esm';
+import React from 'react';
+import { toast } from 'sonner';
+import { useDrawerDepth } from '../../elements/Drawer/index.js';
+import { parseSearchParams } from '../../utilities/parseSearchParams.js';
+import { useConfig } from '../Config/index.js';
+import { useRouteTransition } from '../RouteTransition/index.js';
+import { useTranslation } from '../Translation/index.js';
+import { getMetaSelection, getShiftSelection, groupItemIDsByRelation } from './selection.js';
+const Context = /*#__PURE__*/React.createContext({
+  activeCollectionFolderSlugs: [],
+  allCollectionFolderSlugs: [],
+  allowCreateCollectionSlugs: [],
+  breadcrumbs: [],
+  clearSelections: () => {},
+  currentFolder: null,
+  documents: [],
+  focusedRowIndex: -1,
+  folderCollectionConfig: null,
+  folderCollectionSlug: '',
+  folderFieldName: 'folder',
+  folderID: undefined,
+  FolderResultsComponent: null,
+  getFolderRoute: () => '',
+  getSelectedItems: () => [],
+  isDragging: false,
+  itemKeysToMove: undefined,
+  lastSelectedIndex: null,
+  moveToFolder: () => Promise.resolve(undefined),
+  onItemClick: () => undefined,
+  onItemKeyPress: () => undefined,
+  refineFolderData: () => undefined,
+  search: '',
+  selectedItemKeys: new Set(),
+  setBreadcrumbs: () => {},
+  setFocusedRowIndex: () => -1,
+  setIsDragging: () => false,
+  sort: '_folderOrDocumentTitle',
+  subfolders: []
+});
+export function FolderProvider({
+  activeCollectionFolderSlugs: activeCollectionSlugs,
+  allCollectionFolderSlugs = [],
+  allowCreateCollectionSlugs,
+  allowMultiSelection = true,
+  baseFolderPath,
+  breadcrumbs: _breadcrumbsFromProps = [],
+  children,
+  documents,
+  folderFieldName,
+  folderID,
+  FolderResultsComponent: InitialFolderResultsComponent,
+  onItemClick: onItemClickFromProps,
+  search,
+  sort = '_folderOrDocumentTitle',
+  subfolders
+}) {
+  const parentFolderContext = useFolder();
+  const {
+    config
+  } = useConfig();
+  const {
+    routes,
+    serverURL
+  } = config;
+  const drawerDepth = useDrawerDepth();
+  const {
+    t
+  } = useTranslation();
+  const router = useRouter();
+  const {
+    startRouteTransition
+  } = useRouteTransition();
+  const [FolderResultsComponent, setFolderResultsComponent] = React.useState(InitialFolderResultsComponent || (() => null));
+  const [folderCollectionConfig] = React.useState(() => config.collections.find(collection => config.folders && collection.slug === config.folders.slug));
+  const folderCollectionSlug = folderCollectionConfig.slug;
+  const rawSearchParams = useSearchParams();
+  const searchParams = React.useMemo(() => parseSearchParams(rawSearchParams), [rawSearchParams]);
+  const [currentQuery, setCurrentQuery] = React.useState(searchParams);
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [selectedItemKeys, setSelectedItemKeys] = React.useState(() => new Set());
+  const [focusedRowIndex, setFocusedRowIndex] = React.useState(-1);
+  const [lastSelectedIndex, setLastSelectedIndex] = React.useState(null);
+  const [breadcrumbs, setBreadcrumbs] = React.useState(_breadcrumbsFromProps);
+  const lastClickTime = React.useRef(null);
+  const totalCount = subfolders.length + documents.length;
+  const clearSelections = React.useCallback(() => {
+    setFocusedRowIndex(-1);
+    setSelectedItemKeys(new Set());
+    setLastSelectedIndex(undefined);
+  }, []);
+  const mergeQuery = React.useCallback((newQuery = {}) => {
+    let page = 'page' in newQuery ? newQuery.page : currentQuery?.page;
+    if ('search' in newQuery) {
+      page = '1';
+    }
+    const mergedQuery = {
+      ...currentQuery,
+      ...newQuery,
+      page,
+      search: 'search' in newQuery ? newQuery.search : currentQuery?.search,
+      sort: 'sort' in newQuery ? newQuery.sort : currentQuery?.sort ?? undefined
+    };
+    return mergedQuery;
+  }, [currentQuery]);
+  const refineFolderData = React.useCallback(({
+    query,
+    updateURL
+  }) => {
+    if (updateURL) {
+      const newQuery_0 = mergeQuery(query);
+      startRouteTransition(() => router.replace(`${qs.stringify(newQuery_0, {
+        addQueryPrefix: true
+      })}`));
+      setCurrentQuery(newQuery_0);
+    }
+  }, [mergeQuery, router, startRouteTransition]);
+  const getFolderRoute = React.useCallback(toFolderID => {
+    const newQuery_1 = mergeQuery({
+      page: '1',
+      search: ''
+    });
+    return formatAdminURL({
+      adminRoute: config.routes.admin,
+      path: `${baseFolderPath}${toFolderID ? `/${toFolderID}` : ''}${qs.stringify(newQuery_1, {
+        addQueryPrefix: true
+      })}`,
+      serverURL: config.serverURL
+    });
+  }, [baseFolderPath, config.routes.admin, config.serverURL, mergeQuery]);
+  const getItem = React.useCallback(itemKey => {
+    return [...subfolders, ...documents].find(doc => doc.itemKey === itemKey);
+  }, [documents, subfolders]);
+  const getSelectedItems = React.useCallback(() => {
+    return Array.from(selectedItemKeys).reduce((acc, itemKey_0) => {
+      const item = getItem(itemKey_0);
+      if (item) {
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+  }, [selectedItemKeys, getItem]);
+  const navigateAfterSelection = React.useCallback(({
+    collectionSlug,
+    docID
+  }) => {
+    if (drawerDepth === 1) {
+      // not in a drawer (default is 1)
+      clearSelections();
+      if (collectionSlug === folderCollectionSlug) {
+        // clicked on folder, take the user to the folder view
+        startRouteTransition(() => router.push(getFolderRoute(docID)));
+      } else if (collectionSlug) {
+        // clicked on document, take the user to the documet view
+        startRouteTransition(() => {
+          router.push(formatAdminURL({
+            adminRoute: config.routes.admin,
+            path: `/collections/${collectionSlug}/${docID}`
+          }));
+        });
+      }
+    }
+    if (typeof onItemClickFromProps === 'function') {
+      onItemClickFromProps(getItem(`${collectionSlug}-${docID}`));
+    }
+  }, [clearSelections, config.routes.admin, drawerDepth, folderCollectionSlug, getFolderRoute, getItem, onItemClickFromProps, router, startRouteTransition]);
+  const onItemKeyPress = React.useCallback(({
+    event,
+    index,
+    item: item_0
+  }) => {
+    const {
+      code,
+      ctrlKey,
+      metaKey,
+      shiftKey
+    } = event;
+    const isShiftPressed = shiftKey;
+    const isCtrlPressed = ctrlKey || metaKey;
+    let newSelectedIndexes = undefined;
+    switch (code) {
+      case 'ArrowDown':
+        {
+          event.preventDefault();
+          const nextIndex_0 = Math.min(index + 1, totalCount - 1);
+          setFocusedRowIndex(nextIndex_0);
+          if (isCtrlPressed) {
+            break;
+          }
+          if (allowMultiSelection && isShiftPressed) {
+            newSelectedIndexes = getShiftSelection({
+              selectFromIndex: Math.min(lastSelectedIndex, totalCount),
+              selectToIndex: Math.min(nextIndex_0, totalCount)
+            });
+          } else {
+            setLastSelectedIndex(nextIndex_0);
+            newSelectedIndexes = new Set([nextIndex_0]);
+          }
+          break;
+        }
+      case 'ArrowUp':
+        {
+          event.preventDefault();
+          const prevIndex_0 = Math.max(index - 1, 0);
+          setFocusedRowIndex(prevIndex_0);
+          if (isCtrlPressed) {
+            break;
+          }
+          if (allowMultiSelection && isShiftPressed) {
+            newSelectedIndexes = getShiftSelection({
+              selectFromIndex: lastSelectedIndex,
+              selectToIndex: prevIndex_0
+            });
+          } else {
+            setLastSelectedIndex(prevIndex_0);
+            newSelectedIndexes = new Set([prevIndex_0]);
+          }
+          break;
+        }
+      case 'Enter':
+        {
+          if (selectedItemKeys.size === 1) {
+            newSelectedIndexes = new Set([]);
+            setFocusedRowIndex(undefined);
+          }
+          break;
+        }
+      case 'Escape':
+        {
+          setFocusedRowIndex(undefined);
+          newSelectedIndexes = new Set([]);
+          break;
+        }
+      case 'KeyA':
+        {
+          if (allowMultiSelection && isCtrlPressed) {
+            event.preventDefault();
+            setFocusedRowIndex(totalCount - 1);
+            newSelectedIndexes = new Set(Array.from({
+              length: totalCount
+            }, (_, i) => i));
+          }
+          break;
+        }
+      case 'Space':
+        {
+          if (allowMultiSelection && isShiftPressed) {
+            event.preventDefault();
+            newSelectedIndexes = getMetaSelection({
+              currentSelection: newSelectedIndexes,
+              toggleIndex: index
+            });
+            setLastSelectedIndex(index);
+          } else {
+            event.preventDefault();
+            newSelectedIndexes = new Set([index]);
+            setLastSelectedIndex(index);
+          }
+          break;
+        }
+      case 'Tab':
+        {
+          if (allowMultiSelection && isShiftPressed) {
+            const prevIndex = index - 1;
+            if (prevIndex < 0 && newSelectedIndexes?.size > 0) {
+              setFocusedRowIndex(prevIndex);
+            }
+          } else {
+            const nextIndex = index + 1;
+            if (nextIndex === totalCount && selectedItemKeys.size > 0) {
+              setFocusedRowIndex(totalCount - 1);
+            }
+          }
+          break;
+        }
+    }
+    if (!newSelectedIndexes) {
+      return;
+    }
+    setSelectedItemKeys([...subfolders, ...documents].reduce((acc_0, item_1, index_0) => {
+      if (newSelectedIndexes?.size && newSelectedIndexes.has(index_0)) {
+        acc_0.add(item_1.itemKey);
+      }
+      return acc_0;
+    }, new Set()));
+    if (selectedItemKeys.size === 1 && code === 'Enter') {
+      navigateAfterSelection({
+        collectionSlug: item_0.relationTo,
+        docID: extractID(item_0.value)
+      });
+    }
+  }, [allowMultiSelection, documents, lastSelectedIndex, navigateAfterSelection, subfolders, totalCount, selectedItemKeys]);
+  const onItemClick = React.useCallback(({
+    event: event_0,
+    index: index_1,
+    item: item_2
+  }) => {
+    let doubleClicked = false;
+    const isCtrlPressed_0 = event_0.ctrlKey || event_0.metaKey;
+    const isShiftPressed_0 = event_0.shiftKey;
+    let newSelectedIndexes_0 = undefined;
+    if (allowMultiSelection && isCtrlPressed_0) {
+      newSelectedIndexes_0 = getMetaSelection({
+        currentSelection: newSelectedIndexes_0,
+        toggleIndex: index_1
+      });
+    } else if (allowMultiSelection && isShiftPressed_0 && lastSelectedIndex !== undefined) {
+      newSelectedIndexes_0 = getShiftSelection({
+        selectFromIndex: lastSelectedIndex,
+        selectToIndex: index_1
+      });
+    } else if (allowMultiSelection && event_0.type === 'pointermove') {
+      // on drag start of an unselected item
+      if (!selectedItemKeys.has(item_2.itemKey)) {
+        newSelectedIndexes_0 = new Set([index_1]);
+      }
+      setLastSelectedIndex(index_1);
+    } else {
+      // Normal click - select single item
+      newSelectedIndexes_0 = new Set([index_1]);
+      const now = Date.now();
+      doubleClicked = now - lastClickTime.current < 400 && lastSelectedIndex === index_1;
+      lastClickTime.current = now;
+      setLastSelectedIndex(index_1);
+    }
+    if (!newSelectedIndexes_0) {
+      setFocusedRowIndex(undefined);
+    } else {
+      setFocusedRowIndex(index_1);
+    }
+    if (newSelectedIndexes_0) {
+      setSelectedItemKeys([...subfolders, ...documents].reduce((acc_1, item_3, index_2) => {
+        if (newSelectedIndexes_0.size && newSelectedIndexes_0.has(index_2)) {
+          acc_1.add(item_3.itemKey);
+        }
+        return acc_1;
+      }, new Set()));
+    }
+    if (doubleClicked) {
+      navigateAfterSelection({
+        collectionSlug: item_2.relationTo,
+        docID: extractID(item_2.value)
+      });
+    }
+  }, [selectedItemKeys, allowMultiSelection, lastSelectedIndex, subfolders, documents, navigateAfterSelection]);
+  /**
+  * Makes requests to the server to update the folder field on passed in documents
+  *
+  * Might rewrite this in the future to return the promises so errors can be handled contextually
+  */
+  const moveToFolder = React.useCallback(async args => {
+    const {
+      itemsToMove: items,
+      toFolderID: toFolderID_0
+    } = args;
+    if (!items.length) {
+      return;
+    }
+    const movingCurrentFolder = items.length === 1 && items[0].relationTo === folderCollectionSlug && items[0].value.id === folderID;
+    if (movingCurrentFolder) {
+      const req = await fetch(`${serverURL}${routes.api}/${folderCollectionSlug}/${folderID}?depth=0`, {
+        body: JSON.stringify({
+          [folderFieldName]: toFolderID_0 || null
+        }),
+        credentials: 'include',
+        headers: {
+          'content-type': 'application/json'
+        },
+        method: 'PATCH'
+      });
+      if (req.status !== 200) {
+        toast.error(t('general:error'));
+      }
+    } else {
+      for (const [collectionSlug_0, ids] of Object.entries(groupItemIDsByRelation(items))) {
+        const query_0 = qs.stringify({
+          depth: 0,
+          limit: 0,
+          where: {
+            id: {
+              in: ids
+            }
+          }
+        }, {
+          addQueryPrefix: true
+        });
+        try {
+          await fetch(`${serverURL}${routes.api}/${collectionSlug_0}${query_0}`, {
+            body: JSON.stringify({
+              [folderFieldName]: toFolderID_0 || null
+            }),
+            credentials: 'include',
+            headers: {
+              'content-type': 'application/json'
+            },
+            method: 'PATCH'
+          });
+        } catch (error) {
+          toast.error(t('general:error'));
+          // eslint-disable-next-line no-console
+          console.error(error);
+          continue;
+        }
+      }
+    }
+    clearSelections();
+  }, [folderID, clearSelections, folderCollectionSlug, folderFieldName, routes.api, serverURL, t]);
+  // If a new component is provided, update the state so children can re-render with the new component
+  React.useEffect(() => {
+    if (InitialFolderResultsComponent) {
+      setFolderResultsComponent(InitialFolderResultsComponent);
+    }
+  }, [InitialFolderResultsComponent]);
+  return /*#__PURE__*/_jsx(Context, {
+    value: {
+      activeCollectionFolderSlugs: activeCollectionSlugs || allCollectionFolderSlugs,
+      allCollectionFolderSlugs,
+      allowCreateCollectionSlugs,
+      breadcrumbs,
+      clearSelections,
+      currentFolder: breadcrumbs?.[0]?.id ? formatFolderOrDocumentItem({
+        folderFieldName,
+        isUpload: false,
+        relationTo: folderCollectionSlug,
+        useAsTitle: folderCollectionConfig.admin.useAsTitle,
+        value: breadcrumbs[breadcrumbs.length - 1]
+      }) : null,
+      documents,
+      focusedRowIndex,
+      folderCollectionConfig,
+      folderCollectionSlug,
+      folderFieldName,
+      folderID,
+      FolderResultsComponent,
+      getFolderRoute,
+      getSelectedItems,
+      isDragging,
+      itemKeysToMove: parentFolderContext.selectedItemKeys,
+      lastSelectedIndex,
+      moveToFolder,
+      onItemClick,
+      onItemKeyPress,
+      refineFolderData,
+      search,
+      selectedItemKeys,
+      setBreadcrumbs,
+      setFocusedRowIndex,
+      setIsDragging,
+      sort,
+      subfolders
+    },
+    children: children
+  });
+}
+export function useFolder() {
+  const context = React.use(Context);
+  if (context === undefined) {
+    throw new Error('useFolder must be used within a FolderProvider');
+  }
+  return context;
+}
+//# sourceMappingURL=index.js.map

@@ -1,0 +1,34 @@
+import React from 'react';
+import type { FieldOption } from '../FieldSelect/reduceFieldOptions.js';
+import { type EditManyProps } from './index.js';
+import './index.scss';
+import '../../forms/RenderFields/index.scss';
+type EditManyDrawerContentProps = {
+    /**
+     * The total count of selected items
+     */
+    count?: number;
+    /**
+     * The slug of the drawer
+     */
+    drawerSlug: string;
+    /**
+     * The IDs of the selected items
+     */
+    ids?: (number | string)[];
+    /**
+     * Whether all items are selected
+     */
+    selectAll?: boolean;
+    /**
+     * The fields that are selected to bulk edit
+     */
+    selectedFields: FieldOption[];
+    /**
+     * The function to set the selected fields to bulk edit
+     */
+    setSelectedFields: (fields: FieldOption[]) => void;
+} & EditManyProps;
+export declare const EditManyDrawerContent: React.FC<EditManyDrawerContentProps>;
+export {};
+//# sourceMappingURL=DrawerContent.d.ts.map

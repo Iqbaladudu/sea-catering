@@ -75,10 +75,14 @@ export async function GET() {
     })
 
     // Redirect to home page after logout
-    return NextResponse.redirect(new URL('/', process.env.NEXTAUTH_URL || 'http://localhost:3000'))
+    return NextResponse.redirect(
+      new URL('/', process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'),
+    )
   } catch (error) {
     console.error('Error during logout redirect:', error)
     // Even if there's an error, redirect to home
-    return NextResponse.redirect(new URL('/', process.env.NEXTAUTH_URL || 'http://localhost:3000'))
+    return NextResponse.redirect(
+      new URL('/', process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'),
+    )
   }
 }

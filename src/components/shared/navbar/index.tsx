@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Menu, X, User, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { NAV_LINKS } from '@/lib/constants'
-import { clientAuth } from '@/lib/auth'
+import { clientAuth, type AuthUser } from '@/lib/auth'
 import { toast } from 'sonner'
 
 export const Navbar: React.FC = () => {
@@ -15,7 +15,7 @@ export const Navbar: React.FC = () => {
   const [mobileOpen, setMobileOpen] = React.useState<boolean>(false)
   const [scrolled, setScrolled] = React.useState<boolean>(false)
   const [authState, setAuthState] = React.useState<{
-    user: any | null
+    user: AuthUser | null
     isAuthenticated: boolean
   }>({ user: null, isAuthenticated: false })
 
@@ -248,7 +248,7 @@ export const Navbar: React.FC = () => {
                       asChild
                       onClick={() => setMobileOpen(false)}
                     >
-                      <Link href="/subscription">Get Started</Link>
+                      <Link href="/daftar">Register</Link>
                     </Button>
                   </>
                 )}

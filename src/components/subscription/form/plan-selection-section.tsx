@@ -9,7 +9,7 @@ interface PlanSelectionSectionProps {
   form: UseFormReturn<SubscriptionFormValues>
   mealPlans: MealPlan[] | undefined
   mealPlansLoading: boolean
-  mealPlansError: any
+  mealPlansError: Error | null
   isSubmitting: boolean
 }
 

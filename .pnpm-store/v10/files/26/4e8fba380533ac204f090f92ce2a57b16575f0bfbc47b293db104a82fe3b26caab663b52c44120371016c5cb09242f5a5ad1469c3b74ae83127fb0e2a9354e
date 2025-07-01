@@ -1,0 +1,106 @@
+'use client';
+
+import { c as _c } from "react/compiler-runtime";
+import { jsx as _jsx } from "react/jsx-runtime";
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext.js';
+import { $insertNodeToNearestRoot } from '@lexical/utils';
+import { useConfig } from '@payloadcms/ui';
+import { $getPreviousSelection, $getSelection, $isParagraphNode, $isRangeSelection, COMMAND_PRIORITY_EDITOR, createCommand } from 'lexical';
+import { useEffect } from 'react';
+import { RelationshipDrawer } from '../drawer/index.js';
+import { $createRelationshipNode, RelationshipNode } from '../nodes/RelationshipNode.js';
+export const INSERT_RELATIONSHIP_COMMAND = createCommand('INSERT_RELATIONSHIP_COMMAND');
+export const RelationshipPlugin = t0 => {
+  const $ = _c(10);
+  const {
+    clientProps
+  } = t0;
+  const [editor] = useLexicalComposerContext();
+  const {
+    config: t1
+  } = useConfig();
+  const {
+    collections
+  } = t1;
+  let enabledRelations = null;
+  if (clientProps?.enabledCollections) {
+    enabledRelations = clientProps?.enabledCollections;
+  } else {
+    if (clientProps?.disabledCollections) {
+      let t2;
+      if ($[0] !== clientProps?.disabledCollections || $[1] !== collections) {
+        let t3;
+        if ($[3] !== clientProps?.disabledCollections) {
+          t3 = t4 => {
+            const {
+              slug
+            } = t4;
+            return !clientProps?.disabledCollections?.includes(slug);
+          };
+          $[3] = clientProps?.disabledCollections;
+          $[4] = t3;
+        } else {
+          t3 = $[4];
+        }
+        t2 = collections.filter(t3).map(_temp);
+        $[0] = clientProps?.disabledCollections;
+        $[1] = collections;
+        $[2] = t2;
+      } else {
+        t2 = $[2];
+      }
+      enabledRelations = t2;
+    }
+  }
+  let t2;
+  let t3;
+  if ($[5] !== editor) {
+    t2 = () => {
+      if (!editor.hasNodes([RelationshipNode])) {
+        throw new Error("RelationshipPlugin: RelationshipNode not registered on editor");
+      }
+      return editor.registerCommand(INSERT_RELATIONSHIP_COMMAND, _temp2, COMMAND_PRIORITY_EDITOR);
+    };
+    t3 = [editor];
+    $[5] = editor;
+    $[6] = t2;
+    $[7] = t3;
+  } else {
+    t2 = $[6];
+    t3 = $[7];
+  }
+  useEffect(t2, t3);
+  let t4;
+  if ($[8] !== enabledRelations) {
+    t4 = _jsx(RelationshipDrawer, {
+      enabledCollectionSlugs: enabledRelations
+    });
+    $[8] = enabledRelations;
+    $[9] = t4;
+  } else {
+    t4 = $[9];
+  }
+  return t4;
+};
+function _temp(t0) {
+  const {
+    slug: slug_0
+  } = t0;
+  return slug_0;
+}
+function _temp2(payload) {
+  const selection = $getSelection() || $getPreviousSelection();
+  if ($isRangeSelection(selection)) {
+    const relationshipNode = $createRelationshipNode(payload);
+    const {
+      focus
+    } = selection;
+    const focusNode = focus.getNode();
+    $insertNodeToNearestRoot(relationshipNode);
+    if ($isParagraphNode(focusNode) && !focusNode.__first) {
+      focusNode.remove();
+    }
+  }
+  return true;
+}
+//# sourceMappingURL=index.js.map

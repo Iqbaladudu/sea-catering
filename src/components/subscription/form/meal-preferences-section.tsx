@@ -16,19 +16,22 @@ const MEAL_TYPES = [
   { label: 'Dinner', value: 'dinner' },
 ] as const
 
+type MealType = 'breakfast' | 'lunch' | 'dinner'
+
 export const MealPreferencesSection: React.FC<MealPreferencesSectionProps> = ({
   form,
   isSubmitting,
 }) => {
   const handleMealTypeChange = (mealValue: string) => {
     const current = form.getValues('mealTypes')
-    if (current.includes(mealValue as any)) {
+    const mealType = mealValue as MealType
+    if (current.includes(mealType)) {
       form.setValue(
         'mealTypes',
-        current.filter((v: string) => v !== mealValue),
+        current.filter((v: MealType) => v !== mealType),
       )
     } else {
-      form.setValue('mealTypes', [...current, mealValue as any])
+      form.setValue('mealTypes', [...current, mealType])
     }
   }
 

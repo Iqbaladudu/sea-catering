@@ -53,7 +53,7 @@ export default function TestimonialCard() {
     return () => window.removeEventListener('keydown', handler)
   }, [testimonials.length, current, prevSlide, nextSlide])
 
-  const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
+  const handleDragEnd = (_: unknown, info: { offset: { x: number } }) => {
     setDragging(false)
     if (info.offset.x > 80) prevSlide()
     else if (info.offset.x < -80) nextSlide()

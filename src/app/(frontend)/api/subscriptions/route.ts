@@ -1,11 +1,20 @@
+import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { NextRequest, NextResponse } from 'next/server'
 import { serverAuth } from '@/lib/auth-server'
 
-const payload = await getPayload({ config })
+// Skip database connection during build time
+const isBuilding = process.env.NODE_ENV === 'production' && !process.env.DATABASE_URI
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
+  // Return mock data during build time
+  if (isBuilding) {
+    return NextResponse.json({
+      success: true,
+      data: [],
+    })
+  }
+
   try {
     // Check authentication
     const authState = await serverAuth.getAuthState()
@@ -16,7 +25,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get subscriptions for the authenticated user
+    const payload = await getPayload({ config })
+
+    // Fetch user's subscriptions
     const subscriptions = await payload.find({
       collection: 'subscriptions',
       where: {
@@ -24,7 +35,7 @@ export async function GET(request: NextRequest) {
           equals: authState.user.id,
         },
       },
-      depth: 2, // To populate the plan relationship
+      sort: '-createdAt',
     })
 
     return NextResponse.json({

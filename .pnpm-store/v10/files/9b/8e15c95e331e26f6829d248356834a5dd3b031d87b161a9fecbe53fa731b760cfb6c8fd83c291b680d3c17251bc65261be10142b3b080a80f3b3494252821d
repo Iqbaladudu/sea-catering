@@ -1,0 +1,9 @@
+import { fetch as undiciFetch } from 'undici';
+/**
+ * A "safe" version of undici's fetch that prevents SSRF attacks.
+ *
+ * - Utilizes a custom dispatcher that filters out requests to unsafe IP addresses.
+ * - Undici was used because it supported interceptors as well as "credentials: include". Native fetch
+ */
+export declare const safeFetch: (input: import("undici").RequestInfo, init?: import("undici").RequestInit | undefined) => Promise<import("undici").Response>;
+//# sourceMappingURL=safeFetch.d.ts.map

@@ -1,0 +1,14 @@
+import type { ClientCollectionConfig } from 'payload';
+import React from 'react';
+export type PublishManyProps = {
+    collection: ClientCollectionConfig;
+};
+export declare const PublishMany: React.FC<PublishManyProps>;
+type PublishMany_v4Props = {
+    count: number;
+    ids: (number | string)[];
+    selectAll: boolean;
+} & PublishManyProps;
+export declare const PublishMany_v4: React.FC<PublishMany_v4Props>;
+export {};
+//# sourceMappingURL=index.d.ts.map

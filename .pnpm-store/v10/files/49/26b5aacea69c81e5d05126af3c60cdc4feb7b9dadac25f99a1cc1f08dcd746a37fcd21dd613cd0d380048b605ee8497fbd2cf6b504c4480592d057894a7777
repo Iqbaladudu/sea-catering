@@ -1,0 +1,29 @@
+import type { ErrorResult, GetFolderResultsComponentAndDataArgs, ServerFunction } from 'payload';
+import type { FolderBreadcrumb, FolderOrDocument } from 'payload/shared';
+type GetFolderResultsComponentAndDataResult = {
+    breadcrumbs?: FolderBreadcrumb[];
+    documents?: FolderOrDocument[];
+    FolderResultsComponent: React.ReactNode;
+    subfolders?: FolderOrDocument[];
+};
+type GetFolderResultsComponentAndDataErrorResult = {
+    breadcrumbs?: never;
+    documents?: never;
+    FolderResultsComponent?: never;
+    subfolders?: never;
+} & ({
+    message: string;
+} | ErrorResult);
+export declare const getFolderResultsComponentAndDataHandler: ServerFunction<GetFolderResultsComponentAndDataArgs, Promise<GetFolderResultsComponentAndDataErrorResult | GetFolderResultsComponentAndDataResult>>;
+/**
+ * This function is responsible for fetching folder data, building the results component
+ * and returns the data and component together.
+ *
+ *
+ * Open ended questions:
+ * - If we rerender the results section, does the provider update?? I dont think so, if the provider is on the server.
+ *   Maybe we should move the provider to the client.
+ */
+export declare const getFolderResultsComponentAndData: ({ activeCollectionSlugs, browseByFolder, displayAs, folderID, req, sort, }: GetFolderResultsComponentAndDataArgs) => Promise<GetFolderResultsComponentAndDataResult>;
+export {};
+//# sourceMappingURL=getFolderResultsComponentAndData.d.ts.map

@@ -1,0 +1,97 @@
+'use client';
+
+import { c as _c } from "react/compiler-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { getTranslation } from '@payloadcms/translations';
+import { formatAdminURL } from 'payload/shared';
+import { useConfig } from '../../providers/Config/index.js';
+import { useTranslation } from '../../providers/Translation/index.js';
+import { Button } from '../Button/index.js';
+import './index.scss';
+const baseClass = 'list-folder-pills';
+export function ListFolderPills(t0) {
+  const $ = _c(16);
+  const {
+    collectionConfig,
+    folderCollectionSlug,
+    viewType
+  } = t0;
+  const {
+    i18n,
+    t
+  } = useTranslation();
+  const {
+    config
+  } = useConfig();
+  if (!folderCollectionSlug) {
+    return null;
+  }
+  const t1 = viewType === "folders" && `${baseClass}__button--active`;
+  let t2;
+  if ($[0] !== t1) {
+    t2 = [`${baseClass}__button`, t1].filter(Boolean);
+    $[0] = t1;
+    $[1] = t2;
+  } else {
+    t2 = $[1];
+  }
+  const t3 = t2.join(" ");
+  const t4 = viewType === "folders";
+  const t5 = viewType === "list" ? "link" : "div";
+  const t6 = `/collections/${collectionConfig.slug}/${folderCollectionSlug}`;
+  let t7;
+  if ($[2] !== collectionConfig.labels?.plural || $[3] !== collectionConfig.slug || $[4] !== config.routes.admin || $[5] !== config.serverURL || $[6] !== i18n || $[7] !== t || $[8] !== t3 || $[9] !== t4 || $[10] !== t5 || $[11] !== t6 || $[12] !== viewType) {
+    const t8 = _jsx(Button, {
+      buttonStyle: "tab",
+      className: t3,
+      disabled: t4,
+      el: t5,
+      to: formatAdminURL({
+        adminRoute: config.routes.admin,
+        path: t6,
+        serverURL: config.serverURL
+      }),
+      children: t("folder:byFolder")
+    });
+    const t9 = viewType === "list" && `${baseClass}__button--active`;
+    let t10;
+    if ($[14] !== t9) {
+      t10 = [`${baseClass}__button`, t9].filter(Boolean);
+      $[14] = t9;
+      $[15] = t10;
+    } else {
+      t10 = $[15];
+    }
+    t7 = _jsxs("div", {
+      className: baseClass,
+      children: [t8, _jsxs(Button, {
+        buttonStyle: "tab",
+        className: t10.join(" "),
+        disabled: viewType === "list",
+        el: viewType === "folders" ? "link" : "div",
+        to: formatAdminURL({
+          adminRoute: config.routes.admin,
+          path: `/collections/${collectionConfig.slug}`,
+          serverURL: config.serverURL
+        }),
+        children: [t("general:all"), " ", getTranslation(collectionConfig?.labels?.plural, i18n)]
+      })]
+    });
+    $[2] = collectionConfig.labels?.plural;
+    $[3] = collectionConfig.slug;
+    $[4] = config.routes.admin;
+    $[5] = config.serverURL;
+    $[6] = i18n;
+    $[7] = t;
+    $[8] = t3;
+    $[9] = t4;
+    $[10] = t5;
+    $[11] = t6;
+    $[12] = viewType;
+    $[13] = t7;
+  } else {
+    t7 = $[13];
+  }
+  return t7;
+}
+//# sourceMappingURL=index.js.map

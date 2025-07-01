@@ -24,7 +24,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, MealPlans, Subscriptions, Testimonials, Customer],
-  csrf: ['http://localhost:3000'],
+  csrf: [`${process.env.NEXT_PUBLIC_URL}`],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

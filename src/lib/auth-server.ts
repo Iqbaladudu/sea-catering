@@ -126,7 +126,7 @@ export const serverAuth = {
 // Utility functions for common auth operations
 export const authUtils = {
   // Validate session and redirect if invalid
-  async requireAuth(redirectUrl = '/masuk'): Promise<AuthUser> {
+  async requireAuth(_redirectUrl = '/masuk'): Promise<AuthUser> {
     const auth = await getServerAuth()
 
     if (!auth.isAuthenticated()) {

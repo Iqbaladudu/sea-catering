@@ -1,0 +1,84 @@
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { getTranslation } from '@payloadcms/translations';
+import React from 'react';
+import { CloseModalButton } from '../../../elements/CloseModalButton/index.js';
+import { useListDrawerContext } from '../../../elements/ListDrawer/Provider.js';
+import { ListFolderPills } from '../../../elements/ListFolderPills/index.js';
+import { DrawerRelationshipSelect } from '../../../elements/ListHeader/DrawerRelationshipSelect/index.js';
+import { ListDrawerCreateNewDocButton } from '../../../elements/ListHeader/DrawerTitleActions/index.js';
+import { ListHeader } from '../../../elements/ListHeader/index.js';
+import { ListBulkUploadButton, ListCreateNewButton } from '../../../elements/ListHeader/TitleActions/index.js';
+import { useConfig } from '../../../providers/Config/index.js';
+import { ListSelection } from '../ListSelection/index.js';
+import './index.scss';
+const drawerBaseClass = 'list-drawer';
+export const CollectionListHeader = ({
+  className,
+  collectionConfig,
+  Description,
+  disableBulkDelete,
+  disableBulkEdit,
+  hasCreatePermission,
+  i18n,
+  isBulkUploadEnabled,
+  newDocumentURL,
+  onBulkUploadSuccess,
+  openBulkUpload,
+  smallBreak,
+  viewType
+}) => {
+  const {
+    config,
+    getEntityConfig
+  } = useConfig();
+  const {
+    drawerSlug,
+    isInDrawer,
+    selectedOption
+  } = useListDrawerContext();
+  if (isInDrawer) {
+    return /*#__PURE__*/_jsx(ListHeader, {
+      Actions: [/*#__PURE__*/_jsx(CloseModalButton, {
+        className: `${drawerBaseClass}__header-close`,
+        slug: drawerSlug
+      }, "close-button")],
+      AfterListHeaderContent: /*#__PURE__*/_jsxs(_Fragment, {
+        children: [Description, /*#__PURE__*/_jsx(DrawerRelationshipSelect, {})]
+      }),
+      className: `${drawerBaseClass}__header`,
+      title: getTranslation(getEntityConfig({
+        collectionSlug: selectedOption.value
+      })?.labels?.plural, i18n),
+      TitleActions: [/*#__PURE__*/_jsx(ListDrawerCreateNewDocButton, {
+        hasCreatePermission: hasCreatePermission
+      }, "list-drawer-create-new-doc")].filter(Boolean)
+    });
+  }
+  return /*#__PURE__*/_jsx(ListHeader, {
+    Actions: [!smallBreak && /*#__PURE__*/_jsx(ListSelection, {
+      collectionConfig: collectionConfig,
+      disableBulkDelete: disableBulkDelete,
+      disableBulkEdit: disableBulkEdit,
+      label: getTranslation(collectionConfig?.labels?.plural, i18n)
+    }, "list-selection"), collectionConfig.folders && config.folders && /*#__PURE__*/_jsx(ListFolderPills, {
+      collectionConfig: collectionConfig,
+      folderCollectionSlug: config.folders.slug,
+      viewType: viewType
+    }, "list-header-buttons")].filter(Boolean),
+    AfterListHeaderContent: Description,
+    className: className,
+    title: getTranslation(collectionConfig?.labels?.plural, i18n),
+    TitleActions: [hasCreatePermission && /*#__PURE__*/_jsx(ListCreateNewButton, {
+      collectionConfig: collectionConfig,
+      hasCreatePermission: hasCreatePermission,
+      newDocumentURL: newDocumentURL
+    }, "list-header-create-new-doc"), hasCreatePermission && isBulkUploadEnabled && /*#__PURE__*/_jsx(ListBulkUploadButton, {
+      collectionSlug: collectionConfig.slug,
+      hasCreatePermission: hasCreatePermission,
+      isBulkUploadEnabled: isBulkUploadEnabled,
+      onBulkUploadSuccess: onBulkUploadSuccess,
+      openBulkUpload: openBulkUpload
+    }, "list-header-bulk-upload")].filter(Boolean)
+  });
+};
+//# sourceMappingURL=index.js.map
