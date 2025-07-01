@@ -1,67 +1,175 @@
-# Payload Blank Template
+# Sea Catering - Meal Subscription Management System
 
-This template comes configured with the bare minimum to get started on anything you need.
+A modern web application built with Payload CMS, Next.js, and TypeScript for managing meal subscription services. This system provides a complete solution for catering businesses to manage meal plans, subscriptions, customers, and testimonials.
 
-## Quick start
+## 🚀 Features
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+### Core Functionality
+- **Meal Plan Management**: Create and manage different meal plans with pricing, features, and dietary options
+- **Subscription System**: Handle customer subscriptions with flexible delivery schedules
+- **Customer Management**: Comprehensive customer database with subscription tracking
+- **Testimonials**: Collect and display customer reviews and testimonials
+- **Admin Dashboard**: Intuitive admin interface powered by Payload CMS
 
-## Quick Start - local setup
+### Technical Features
+- **Modern Stack**: Built with Next.js 15, React 19, and TypeScript
+- **Database**: PostgreSQL with Payload CMS ORM
+- **Authentication**: Built-in user authentication and role management
+- **Responsive Design**: Mobile-first design with Tailwind CSS
+- **API Integration**: REST API endpoints
 
-To spin up this template locally, follow these steps:
+## 📁 Project Structure
 
-### Clone
+```
+sea-catering/
+├── src/
+│   ├── collections/          # Payload CMS collections
+│   │   ├── Customer.ts       # Customer data management
+│   │   ├── MealPlans.ts      # Meal plan configurations
+│   │   ├── Media.ts          # File upload handling
+│   │   ├── Subscriptions.ts  # Subscription management
+│   │   ├── Testimonials.ts   # Customer testimonials
+│   │   └── Users.ts          # User authentication
+│   ├── app/                  # Next.js app directory
+│   ├── components/           # Reusable React components
+│   ├── actions/              # Server actions
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utility functions
+│   ├── public/               # Static assets
+│   ├── payload.config.ts     # Payload CMS configuration
+│   └── seed.ts               # Database seeding
+├── docker-compose.yml        # Docker development setup
+├── Dockerfile               # Production Docker image
+└── package.json             # Dependencies and scripts
+```
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+## 🛠 Installation & Setup
 
-### Development
+### Prerequisites
+- Node.js 20.9.0+
+- npm latest or pnpm latest
+- PostgreSQL database
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URI` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+### Method 1: Local Development with npm/pnpm
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd sea-catering
+   ```
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+2. **Install dependencies**
+   ```bash
+   # Using pnpm (recommended)
+   pnpm install
 
-#### Docker (Optional)
+   # Or using npm
+   npm install
+   ```
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+3. **Environment setup**
+   ```bash
+   cp .env.example .env
+   ```
 
-To do so, follow these steps:
+   Configure your environment variables in `.env`:
+   ```env
+   NEXT_PUBLIC_URL=http://localhost:3000
+   DATABASE_URI=postgresql://username:password@localhost:5432/sea_catering
+   PAYLOAD_SECRET=your-secret-key
+   ```
 
-- Modify the `MONGODB_URI` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URI` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+4. **Start development server**
+   ```bash
+   # Using pnpm
+   pnpm dev
 
-## How it works
+   # Or using npm
+   npm run dev
+   ```
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+5. **Access the application**
+   - Frontend: http://localhost:3000
+   - Admin Panel: http://localhost:3000/admin
 
-### Collections
+### Method 2: Docker Compose Development
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+1. **Clone and setup**
+   ```bash
+   git clone <repository-url>
+   cd sea-catering
+   cp .env.example .env
+   ```
 
-- #### Users (Authentication)
+2. **Configure environment for Docker**
+   Update your `.env` file:
+   ```env
+   NEXT_PUBLIC_URL=http://localhost:3000
+   DATABASE_URI=postgresql://postgres:password@postgres:5432/sea_catering
+   PAYLOAD_SECRET=your-secret-key
+   ```
 
-  Users are auth-enabled collections that have access to the admin panel.
+3. **Start with Docker Compose**
+   ```bash
+   docker-compose up
+   ```
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+   This will:
+   - Start PostgreSQL database on port 5433
+   - Install dependencies automatically
+   - Seed the database with initial data
+   - Start the development server on port 3000
 
-- #### Media
+4. **Access the application**
+   - Frontend: http://localhost:3000
+   - Admin Panel: http://localhost:3000/admin
+   - PostgreSQL: localhost:5433
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+## 📊 Data Collections
 
-### Docker
+### Meal Plans
+- Plan details (name, price, description)
+- Features and benefits
+- Delivery frequency
+- Dietary options and restrictions
+- Sample menus and calorie information
+- FAQ section
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+### Subscriptions
+- Customer subscription management
+- Plan associations
+- Delivery scheduling
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
+### Customers
+- Customer profiles and contact information
+- Subscription history
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
+### Testimonials
+- Customer reviews and ratings
+- Display management
 
-## Questions
+## 🔧 Configuration
 
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+### Database
+The application uses PostgreSQL with Payload CMS as the ORM. Database configuration is handled in `payload.config.ts`.
+
+### Authentication
+User authentication is built-in with Payload CMS, supporting role-based access control.
+
+### Environment Variables
+Ensure these are set in production:
+- `DATABASE_URI`: PostgreSQL connection string
+- `PAYLOAD_SECRET`: Secret key for encryption
+- `NEXT_PUBLIC_URL`: Your production URL
+
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For questions and support:
+- Create an issue in the repository
+- Check the [Payload CMS documentation](https://payloadcms.com/docs)
+- Review the [Next.js documentation](https://nextjs.org/docs)
