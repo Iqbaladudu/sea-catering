@@ -47,6 +47,7 @@ export const Testimonials: React.FC = () => {
                 <Button
                   variant="default"
                   size="lg"
+                  onClick={() => setOpen(true)}
                   className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white rounded-full px-6 sm:px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 min-h-[44px] text-sm sm:text-base md:text-lg font-semibold"
                   aria-label="Add Testimonial"
                 >
