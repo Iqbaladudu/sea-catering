@@ -4,9 +4,16 @@ const Subscriptions: CollectionConfig = {
   slug: 'subscriptions',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'phone', 'plan', 'createdAt'],
+    defaultColumns: ['name', 'phone', 'plan', 'status', 'createdAt'],
   },
   fields: [
+    {
+      name: 'customer',
+      type: 'relationship',
+      required: false,
+      label: 'Customer',
+      relationTo: 'customers',
+    },
     {
       name: 'name',
       type: 'text',
@@ -58,6 +65,18 @@ const Subscriptions: CollectionConfig = {
       name: 'allergies',
       type: 'text',
       label: 'Allergies / Dietary Restrictions',
+    },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      label: 'Subscription Status',
+      defaultValue: 'active',
+      options: [
+        { label: 'Active', value: 'active' },
+        { label: 'Paused', value: 'paused' },
+        { label: 'Canceled', value: 'canceled' },
+      ],
     },
   ],
 }

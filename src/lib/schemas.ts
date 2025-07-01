@@ -17,4 +17,11 @@ export const subscriptionFormSchema = z.object({
     .array(z.enum(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']))
     .min(1, 'Select at least one delivery day'),
   allergies: z.string().optional().nullable(),
+  customer: z.number().optional(),
+  status: z.enum(['active', 'paused', 'canceled']).optional(),
+})
+
+export const updateSubscriptionStatusSchema = z.object({
+  id: z.number(),
+  status: z.enum(['active', 'paused', 'canceled']),
 })

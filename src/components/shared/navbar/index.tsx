@@ -4,18 +4,41 @@ import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, User, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { NAV_LINKS } from '@/lib/constants'
+import { clientAuth } from '@/lib/auth'
+import { toast } from 'sonner'
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = React.useState<boolean>(false)
   const [scrolled, setScrolled] = React.useState<boolean>(false)
+  const [authState, setAuthState] = React.useState<{
+    user: any | null
+    isAuthenticated: boolean
+  }>({ user: null, isAuthenticated: false })
 
   React.useEffect(() => {
     setMobileOpen(false)
   }, [pathname])
+
+  React.useEffect(() => {
+    const checkAuth = () => {
+      if (clientAuth.hasAuthCookies()) {
+        const auth = clientAuth.getAuthState()
+        setAuthState(auth)
+      } else {
+        setAuthState({ user: null, isAuthenticated: false })
+      }
+    }
+
+    checkAuth()
+
+    // Check auth state periodically
+    const interval = setInterval(checkAuth, 2000)
+    return () => clearInterval(interval)
+  }, [])
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +53,20 @@ export const Navbar: React.FC = () => {
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'
     return pathname.startsWith(href)
+  }
+
+  const handleLogout = async () => {
+    try {
+      // Use client auth logout which handles API call and redirect
+      clientAuth.logout()
+      setAuthState({ user: null, isAuthenticated: false })
+      toast.success('Logging out...')
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Fallback to direct logout
+      clientAuth.logout()
+      setAuthState({ user: null, isAuthenticated: false })
+    }
   }
 
   return (
@@ -93,19 +130,38 @@ export const Navbar: React.FC = () => {
 
         {/* CTA Button - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button
-            variant="outline"
-            className="border-emerald-300 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-400 transition-all duration-300"
-            asChild
-          >
-            <Link href="/masuk">Sign In</Link>
-          </Button>
-          <Button
-            className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            asChild
-          >
-            <Link href="/daftar">Register</Link>
-          </Button>
+          {authState.isAuthenticated && authState.user ? (
+            <>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200">
+                <User className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm font-medium text-emerald-800">{authState.user.name}</span>
+              </div>
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                className="border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-all duration-300"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                className="border-emerald-300 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-400 transition-all duration-300"
+                asChild
+              >
+                <Link href="/masuk">Sign In</Link>
+              </Button>
+              <Button
+                className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                asChild
+              >
+                <Link href="/daftar">Register</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -159,21 +215,43 @@ export const Navbar: React.FC = () => {
 
               {/* Mobile CTA Buttons */}
               <div className="pt-4 border-t border-gray-200 space-y-3">
-                <Button
-                  variant="outline"
-                  className="w-full border-emerald-300 text-emerald-600 hover:bg-emerald-50 min-h-[48px]"
-                  asChild
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <Link href="/masuk">Sign In</Link>
-                </Button>
-                <Button
-                  className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg min-h-[48px]"
-                  asChild
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <Link href="/subscription">Get Started</Link>
-                </Button>
+                {authState.isAuthenticated && authState.user ? (
+                  <>
+                    <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200">
+                      <User className="w-5 h-5 text-emerald-600" />
+                      <span className="font-medium text-emerald-800">{authState.user.name}</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        handleLogout()
+                        setMobileOpen(false)
+                      }}
+                      className="w-full border-gray-300 text-gray-600 hover:bg-gray-50 min-h-[48px]"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full border-emerald-300 text-emerald-600 hover:bg-emerald-50 min-h-[48px]"
+                      asChild
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <Link href="/masuk">Sign In</Link>
+                    </Button>
+                    <Button
+                      className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg min-h-[48px]"
+                      asChild
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <Link href="/subscription">Get Started</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

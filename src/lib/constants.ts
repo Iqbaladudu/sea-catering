@@ -92,9 +92,8 @@ export const MEAL_PLANS: MealPlan[] = [
 
 export const NAV_LINKS: NavLink[] = [
   { name: 'Home', href: '/' },
-  { name: 'Meal Plans', href: '/#menu' },
+  { name: 'Manage', href: '/manage' },
   { name: 'Subscription', href: '/subscription' },
-  { name: 'Contact Us', href: '/#contact' },
 ]
 
 export const TESTIMONIALS: Testimonial[] = [

@@ -48,6 +48,7 @@ async function mealPlansSeed() {
           question: arr.question,
           answer: arr.answer,
         })),
+        deliveryFrequency: meal.deliveryFrequency,
       },
     })
   }

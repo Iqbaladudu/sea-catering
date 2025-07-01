@@ -10,144 +10,169 @@ export interface AuthUser {
 
 export interface AuthState {
   user: AuthUser | null
-  token: string | null
   isAuthenticated: boolean
 }
 
-// Auth storage keys
-const AUTH_TOKEN_KEY = 'sea_catering_auth_token'
-const AUTH_USER_KEY = 'sea_catering_auth_user'
+// Client-side auth utilities (limited functionality due to HTTP-only cookies)
+export const clientAuth = {
+  // Get user data from non-HTTP-only cookie (client-side accessible)
+  getAuthUser(): AuthUser | null {
+    if (typeof window === 'undefined') return null
 
-// Get auth token from localStorage
-export const getAuthToken = (): string | null => {
-  if (typeof window === 'undefined') return null
-  return localStorage.getItem(AUTH_TOKEN_KEY)
+    const cookies = document.cookie.split(';')
+    const authUserCookie = cookies.find((cookie) => cookie.trim().startsWith('auth-user='))
+
+    if (!authUserCookie) return null
+
+    try {
+      const userData = authUserCookie.split('=')[1]
+      return JSON.parse(decodeURIComponent(userData)) as AuthUser
+    } catch (error) {
+      console.error('Error parsing user data from cookie:', error)
+      return null
+    }
+  },
+
+  // Check if auth cookies exist (basic auth check)
+  hasAuthCookies(): boolean {
+    if (typeof window === 'undefined') return false
+
+    const cookies = document.cookie.split(';')
+    const hasUserCookie = cookies.some((cookie) => cookie.trim().startsWith('auth-user='))
+
+    return hasUserCookie
+  },
+
+  // Get basic auth state (client-side)
+  getAuthState(): AuthState {
+    const user = this.getAuthUser()
+    const hasAuth = this.hasAuthCookies()
+
+    return {
+      user,
+      isAuthenticated: hasAuth && user !== null,
+    }
+  },
+
+  // Client-side logout (clears non-HTTP-only cookies and redirects)
+  logout(): void {
+    if (typeof window === 'undefined') return
+
+    // Clear the user data cookie (HTTP-only token will be cleared server-side)
+    document.cookie = 'auth-user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax'
+
+    // Redirect to logout API to clear HTTP-only cookies
+    window.location.href = '/api/auth/logout'
+  },
+
+  // Redirect to login
+  redirectToLogin(returnUrl?: string): void {
+    if (typeof window === 'undefined') return
+
+    const loginUrl = returnUrl ? `/masuk?redirect=${encodeURIComponent(returnUrl)}` : '/masuk'
+
+    window.location.href = loginUrl
+  },
+
+  // Redirect to home
+  redirectToHome(): void {
+    if (typeof window === 'undefined') return
+    window.location.href = '/'
+  },
+
+  // Check auth status via API (for more reliable checking)
+  async checkAuthStatus(): Promise<AuthState> {
+    if (typeof window === 'undefined') {
+      return { user: null, isAuthenticated: false }
+    }
+
+    try {
+      const response = await fetch('/api/auth/status')
+      const data = await response.json()
+
+      if (data.success) {
+        return {
+          user: data.user,
+          isAuthenticated: data.isAuthenticated && data.sessionValid,
+        }
+      } else {
+        return { user: null, isAuthenticated: false }
+      }
+    } catch (error) {
+      console.error('Error checking auth status:', error)
+      return { user: null, isAuthenticated: false }
+    }
+  },
 }
 
-// Set auth token in localStorage
-export const setAuthToken = (token: string): void => {
+// Hook for listening to auth state changes (polling approach for HTTP-only cookies)
+export const useAuthStateChange = (callback: (authState: AuthState) => void) => {
   if (typeof window === 'undefined') return
-  localStorage.setItem(AUTH_TOKEN_KEY, token)
+
+  // Poll for cookie changes every 2 seconds
+  const interval = setInterval(() => {
+    const currentState = clientAuth.getAuthState()
+    callback(currentState)
+  }, 2000)
+
+  return () => clearInterval(interval)
 }
 
-// Remove auth token from localStorage
-export const removeAuthToken = (): void => {
-  if (typeof window === 'undefined') return
-  localStorage.removeItem(AUTH_TOKEN_KEY)
-}
-
-// Get user data from localStorage
-export const getAuthUser = (): AuthUser | null => {
-  if (typeof window === 'undefined') return null
-  const userData = localStorage.getItem(AUTH_USER_KEY)
-  if (!userData) return null
-
-  try {
-    return JSON.parse(userData) as AuthUser
-  } catch (error) {
-    console.error('Error parsing user data:', error)
-    return null
-  }
-}
-
-// Set user data in localStorage
-export const setAuthUser = (user: AuthUser): void => {
-  if (typeof window === 'undefined') return
-  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user))
-}
-
-// Remove user data from localStorage
-export const removeAuthUser = (): void => {
-  if (typeof window === 'undefined') return
-  localStorage.removeItem(AUTH_USER_KEY)
-}
-
-// Get current auth state
-export const getAuthState = (): AuthState => {
-  const token = getAuthToken()
-  const user = getAuthUser()
-
-  return {
-    user,
-    token,
-    isAuthenticated: Boolean(token && user),
-  }
-}
-
-// Login user - save token and user data
-export const loginUser = (user: AuthUser, token: string): void => {
-  setAuthToken(token)
-  setAuthUser(user)
-}
-
-// Logout user - clear all auth data
-export const logoutUser = (): void => {
-  removeAuthToken()
-  removeAuthUser()
-}
-
-// Check if user is authenticated
-export const isAuthenticated = (): boolean => {
-  const token = getAuthToken()
-  const user = getAuthUser()
-  return Boolean(token && user)
-}
-
-// Get authorization header for API requests
-export const getAuthHeader = (): Record<string, string> => {
-  const token = getAuthToken()
-  if (!token) return {}
-
-  return {
-    Authorization: `Bearer ${token}`,
-  }
-}
-
-// Redirect to login page
-export const redirectToLogin = (): void => {
-  if (typeof window === 'undefined') return
-  window.location.href = '/masuk'
-}
-
-// Redirect to home page
-export const redirectToHome = (): void => {
-  if (typeof window === 'undefined') return
-  window.location.href = '/'
-}
-
-// Check if token is expired (basic check)
-export const isTokenExpired = (token: string): boolean => {
-  if (!token) return true
-
-  try {
-    // Basic JWT token structure check
-    const payload = token.split('.')[1]
-    if (!payload) return true
-
-    const decoded = JSON.parse(atob(payload))
-    const currentTime = Date.now() / 1000
-
-    return decoded.exp ? decoded.exp < currentTime : false
-  } catch (error) {
-    console.error('Error checking token expiration:', error)
-    return true
-  }
-}
-
-// Validate current session
+// Validate session (client-side)
 export const validateSession = (): boolean => {
-  const token = getAuthToken()
-  const user = getAuthUser()
+  const user = clientAuth.getAuthUser()
+  const authenticated = clientAuth.hasAuthCookies()
 
-  if (!token || !user) {
-    logoutUser()
-    return false
-  }
-
-  if (isTokenExpired(token)) {
-    logoutUser()
+  if (!user || !authenticated) {
+    clientAuth.logout()
     return false
   }
 
   return true
+}
+
+// Legacy compatibility exports
+export const getAuthUser = clientAuth.getAuthUser.bind(clientAuth)
+export const isAuthenticated = clientAuth.hasAuthCookies.bind(clientAuth)
+export const getAuthState = clientAuth.getAuthState.bind(clientAuth)
+export const logoutUser = clientAuth.logout.bind(clientAuth)
+export const hasAuthCookie = clientAuth.hasAuthCookies.bind(clientAuth)
+export const redirectToLogin = clientAuth.redirectToLogin.bind(clientAuth)
+export const redirectToHome = clientAuth.redirectToHome.bind(clientAuth)
+
+// Constants
+export const AUTH_COOKIE_NAMES = {
+  TOKEN: 'auth-token',
+  USER: 'auth-user',
+} as const
+
+export const AUTH_ROUTES = {
+  LOGIN: '/masuk',
+  REGISTER: '/daftar',
+  LOGOUT: '/api/auth/logout',
+  PROTECTED: ['/subscription'],
+  PUBLIC: ['/', '/masuk', '/daftar'],
+} as const
+
+// Client-side auth error types
+export class ClientAuthError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+  ) {
+    super(message)
+    this.name = 'ClientAuthError'
+  }
+}
+
+export class SessionExpiredError extends ClientAuthError {
+  constructor() {
+    super('Session has expired', 'SESSION_EXPIRED')
+  }
+}
+
+export class UnauthorizedError extends ClientAuthError {
+  constructor() {
+    super('Access denied', 'UNAUTHORIZED')
+  }
 }

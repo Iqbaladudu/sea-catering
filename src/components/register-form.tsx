@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
 import { Mail, Lock, User, UserPlus, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
@@ -67,7 +68,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
 
   const onSubmit = (data: FormData) => {
     // Extract only the fields needed for the register action
-    const { confirmPassword, ...registerData }: { confirmPassword: string } & RegisterFormData =
+    const { confirmPassword: _, ...registerData }: { confirmPassword: string } & RegisterFormData =
       data
 
     console.log('Form data received:', {
@@ -137,14 +138,14 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                     asChild
                     className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
                   >
-                    <a href="/masuk">Sign In Now</a>
+                    <Link href="/masuk">Sign In Now</Link>
                   </Button>
                   <Button
                     variant="outline"
                     asChild
                     className="w-full border-emerald-300 text-emerald-600 hover:bg-emerald-50"
                   >
-                    <a href="/">Explore Meal Plans</a>
+                    <Link href="/">Explore Meal Plans</Link>
                   </Button>
                 </div>
               </div>

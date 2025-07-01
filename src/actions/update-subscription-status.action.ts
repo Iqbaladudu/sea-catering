@@ -2,17 +2,16 @@
 
 import { getPayload } from 'payload'
 import config from '@payload-config'
-
+import { updateSubscriptionStatusSchema } from '@/lib/schemas'
 import { z } from 'zod'
-import { subscriptionFormSchema } from '@/lib/schemas'
 
 const payload = await getPayload({ config })
 
-export default async function submitSubscriptionAction(
-  data: z.infer<typeof subscriptionFormSchema>,
+export default async function updateSubscriptionStatusAction(
+  data: z.infer<typeof updateSubscriptionStatusSchema>,
 ) {
   try {
-    const parsed = subscriptionFormSchema.safeParse(data)
+    const parsed = updateSubscriptionStatusSchema.safeParse(data)
     if (!parsed.success) {
       return {
         success: false,
@@ -20,26 +19,19 @@ export default async function submitSubscriptionAction(
       }
     }
 
-    console.log('Parsed subscription data:', parsed.data, data)
+    console.log('Updating subscription status:', parsed.data)
 
-    const subscription = await payload.create({
+    const subscription = await payload.update({
       collection: 'subscriptions',
+      id: data.id,
       data: {
-        customer: data.customer,
-        name: data.name,
-        phone: data.phone,
-        plan: parseInt(data.plan, 10),
-        mealTypes: data.mealTypes,
-        deliverDays: data.deliverDays,
-        allergies: data.allergies,
-        status: 'active',
+        status: data.status,
       },
     })
 
     // Serialize the subscription to ensure it's a plain object
     const serializedSubscription = {
       id: subscription.id,
-      customer: subscription.customer,
       name: subscription.name,
       phone: subscription.phone,
       plan: subscription.plan,
@@ -53,10 +45,10 @@ export default async function submitSubscriptionAction(
 
     return { success: true, subscription: serializedSubscription }
   } catch (error) {
-    console.error('Error submitting subscription:', error)
+    console.error('Error updating subscription status:', error)
     return {
       success: false,
-      error: 'Failed to submit subscription',
+      error: 'Failed to update subscription status',
     }
   }
 }

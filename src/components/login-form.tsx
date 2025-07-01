@@ -12,7 +12,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { useMutation } from '@tanstack/react-query'
 import loginAction from '@/actions/login.action'
-import { loginUser, redirectToHome } from '@/lib/auth'
 import { loginSchema, type LoginFormData } from '@/lib/validations'
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
@@ -32,17 +31,20 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
         form.reset()
         console.log('Login successful:', result.customer)
 
-        // Store authentication data using auth utilities
-        if (result.customer && result.token) {
-          loginUser(result.customer, result.token)
-        }
-
         // Clear any previous errors
         form.clearErrors()
 
-        // Redirect to home page
+        // Check for redirect URL from query params
+        const urlParams = new URLSearchParams(window.location.search)
+        const redirectUrl = urlParams.get('redirect')
+
+        // Redirect after successful login
         setTimeout(() => {
-          // redirectToHome()
+          if (redirectUrl && redirectUrl.startsWith('/')) {
+            window.location.href = redirectUrl
+          } else {
+            window.location.href = '/'
+          }
         }, 1000) // Small delay to show success message
       } else {
         toast.error(result.error || 'Login failed')

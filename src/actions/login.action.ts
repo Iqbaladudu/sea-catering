@@ -27,16 +27,20 @@ export default async function loginAction(data: LoginFormData) {
       },
     })
 
-    if (result.user) {
-      // Set the authentication token in a secure, HTTP-only cookie
-      const cookieStore = cookies()
-      cookieStore.set('payload-token', result.token, {
+    if (result.user && result.token) {
+      const cookieStore = await cookies()
+
+      // Set HTTP-only cookie with the authentication token
+      cookieStore.set('auth-token', result.token, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: '/',
       })
 
-      // Serialize the customer to ensure it's a plain object
-      const serializedCustomer = {
+      // Set user data in a separate cookie for client-side access
+      const userData = {
         id: result.user.id,
         name: result.user.name,
         email: result.user.email,
@@ -44,10 +48,17 @@ export default async function loginAction(data: LoginFormData) {
         updatedAt: result.user.updatedAt,
       }
 
+      cookieStore.set('auth-user', JSON.stringify(userData), {
+        httpOnly: false, // Allow client-side access for user data
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: '/',
+      })
+
       return {
         success: true,
-        customer: serializedCustomer,
-        token: result.token,
+        customer: userData,
         message: 'Login successful!',
       }
     } else {

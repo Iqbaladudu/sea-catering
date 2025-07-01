@@ -9,18 +9,27 @@ import { subscriptionFormSchema } from '@/lib/schemas'
 
 export type SubscriptionFormValues = z.infer<typeof subscriptionFormSchema>
 
-export const useSubscriptionForm = () => {
+interface UseSubscriptionFormProps {
+  id: number
+  name: string
+  email: string
+  createdAt: string
+  updatedAt: string
+}
+
+export const useSubscriptionForm = (user?: UseSubscriptionFormProps | null) => {
   const [submitted, setSubmitted] = useState(false)
 
   const form = useForm<SubscriptionFormValues>({
     resolver: zodResolver(subscriptionFormSchema),
     defaultValues: {
-      name: '',
+      name: user?.name || '',
       phone: '',
       plan: '0',
       mealTypes: [],
       deliverDays: [],
       allergies: '',
+      customer: user?.id,
     },
   })
 
@@ -35,14 +44,19 @@ export const useSubscriptionForm = () => {
         toast.error(data.error || 'Failed to submit subscription')
       }
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(err?.message || 'Failed to submit subscription')
     },
   })
 
   const onSubmit = (values: SubscriptionFormValues) => {
     console.log('Submitting subscription form:', values)
-    mutation.mutate(values)
+    // Ensure customer ID is included
+    const submissionData = {
+      ...values,
+      customer: user?.id,
+    }
+    mutation.mutate(submissionData)
   }
 
   return {

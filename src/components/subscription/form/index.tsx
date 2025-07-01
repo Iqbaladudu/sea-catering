@@ -19,8 +19,18 @@ import SubmitButton from './submit-button'
 
 export type { SubscriptionFormValues }
 
-export const SubscriptionForm: React.FC = () => {
-  const { form, submitted, onSubmit, isSubmitting } = useSubscriptionForm()
+interface SubscriptionFormProps {
+  user?: {
+    id: number
+    name: string
+    email: string
+    createdAt: string
+    updatedAt: string
+  } | null
+}
+
+export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ user }) => {
+  const { form, submitted, onSubmit, isSubmitting } = useSubscriptionForm(user)
   const { mealPlans, mealPlansLoading, mealPlansError } = useMealPlans()
   const priceCalculation = usePriceCalculation({ form, mealPlans })
 

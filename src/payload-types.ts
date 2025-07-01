@@ -228,24 +228,14 @@ export interface MealPlan {
  */
 export interface Subscription {
   id: number;
+  customer?: (number | null) | Customer;
   name: string;
   phone: string;
   plan: number | MealPlan;
   mealTypes: ('breakfast' | 'lunch' | 'dinner')[];
   deliverDays: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday')[];
   allergies?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials".
- */
-export interface Testimonial {
-  id: number;
-  name: string;
-  message: string;
-  rating: number;
+  status: 'active' | 'paused' | 'canceled';
   updatedAt: string;
   createdAt: string;
 }
@@ -266,6 +256,18 @@ export interface Customer {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  name: string;
+  message: string;
+  rating: number;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -431,12 +433,14 @@ export interface MealPlansSelect<T extends boolean = true> {
  * via the `definition` "subscriptions_select".
  */
 export interface SubscriptionsSelect<T extends boolean = true> {
+  customer?: T;
   name?: T;
   phone?: T;
   plan?: T;
   mealTypes?: T;
   deliverDays?: T;
   allergies?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
