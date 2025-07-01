@@ -8,7 +8,6 @@ import {
   usePriceCalculation,
   type SubscriptionFormValues,
 } from '../../../hooks'
-import FormHeader from './form-header'
 import SuccessState from './success-state'
 import PersonalInfoSection from './personal-info-section'
 import PlanSelectionSection from './plan-selection-section'
@@ -27,9 +26,6 @@ export const SubscriptionForm: React.FC = () => {
 
   return (
     <div className="w-full space-y-8">
-      {/* Header Card */}
-      <FormHeader />
-
       {/* Main Form Card */}
       <Card className="w-full border border-gray-200 bg-white shadow-xl rounded-2xl">
         <CardContent className="p-6 md:p-8">

@@ -43,9 +43,9 @@ export const Contact: React.FC = () => {
   }
 
   return (
-    <section className="w-full py-20 bg-white">
+    <section className="w-full py-20 bg-gradient-to-b from-gray-50/50 to-white">
       <div className="container mx-auto px-4">
-        {/* Section Header - matching features.tsx style */}
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -72,9 +72,9 @@ export const Contact: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Main Content */}
+        {/* Contact Grid */}
         <div className="grid gap-8 sm:gap-6 lg:gap-8 sm:grid-cols-1 lg:grid-cols-2 max-w-5xl mx-auto">
-          {/* Contact Information Card - styled like FeatureCard */}
+          {/* Contact Information Card */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -98,30 +98,32 @@ export const Contact: React.FC = () => {
                 </CardTitle>
               </CardHeader>
 
-              <CardContent className="relative space-y-6 px-6 pb-8">
+              <CardContent className="relative space-y-4 px-6 pb-8">
                 <p className="text-gray-600 text-center leading-relaxed">
                   Have questions or need assistance? Our team is here to help you with any inquiries
                   about menu options, orders, or catering services.
                 </p>
 
-                <div className="space-y-4">
-                  <div className="flex gap-4 items-center p-4 bg-gray-50 rounded-xl">
-                    <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
-                      <Smile className="w-6 h-6 text-emerald-600" />
+                <div className="pt-4 border-t border-gray-100">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
+                        <Smile className="w-6 h-6 text-emerald-600" />
+                      </div>
+                      <div>
+                        <p className="text-gray-900 font-semibold">{managerName}</p>
+                        <p className="text-gray-600 text-sm">Manager</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-gray-900 font-bold">{managerName}</p>
-                      <p className="text-gray-600 text-sm">Manager</p>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-4 items-center p-4 bg-gray-50 rounded-xl">
-                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                      <PhoneCall className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-bold">Phone Number</p>
-                      <p className="text-gray-600 text-sm">{phoneNumber}</p>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                        <PhoneCall className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-gray-900 font-semibold">Phone Number</p>
+                        <p className="text-gray-600 text-sm">{phoneNumber}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -129,7 +131,7 @@ export const Contact: React.FC = () => {
             </Card>
           </motion.div>
 
-          {/* Contact Form Card - styled like FeatureCard */}
+          {/* Contact Form Card */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -144,12 +146,13 @@ export const Contact: React.FC = () => {
                 <CardTitle className="text-xl font-bold text-gray-900 text-center group-hover:text-gray-700 transition-colors duration-300">
                   Contact Form
                 </CardTitle>
-                <CardDescription className="text-gray-600 text-center">
-                  Send us a message and we&aposll get back to you soon.
-                </CardDescription>
               </CardHeader>
 
-              <CardContent className="relative px-6 pb-8">
+              <CardContent className="relative space-y-4 px-6 pb-8">
+                <CardDescription className="text-gray-600 text-center leading-relaxed">
+                  Send us a message and we'll get back to you soon.
+                </CardDescription>
+
                 {submitted ? (
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -169,7 +172,7 @@ export const Contact: React.FC = () => {
                       onChange={handleChange}
                       disabled={submitting}
                       required
-                      className="text-base md:text-lg bg-gray-50 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl p-4"
+                      className="text-base md:text-lg bg-gray-50 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl"
                     />
                     <Input
                       name="email"
@@ -179,7 +182,7 @@ export const Contact: React.FC = () => {
                       onChange={handleChange}
                       disabled={submitting}
                       required
-                      className="text-base md:text-lg bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl p-4"
+                      className="text-base md:text-lg bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
                     />
                     <Textarea
                       name="message"
@@ -188,7 +191,7 @@ export const Contact: React.FC = () => {
                       onChange={handleChange}
                       disabled={submitting}
                       required
-                      className="text-base md:text-lg bg-gray-50 border-gray-200 focus:border-purple-500 focus:ring-purple-500/20 rounded-xl p-4 min-h-[100px] resize-none"
+                      className="text-base md:text-lg bg-gray-50 border-gray-200 focus:border-purple-500 focus:ring-purple-500/20 rounded-xl min-h-[100px] resize-none"
                     />
                     {error && (
                       <div className="text-red-500 text-sm bg-red-50 p-3 rounded-xl border border-red-200">
@@ -198,7 +201,7 @@ export const Contact: React.FC = () => {
                     <Button
                       type="submit"
                       size="lg"
-                      className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold text-base md:text-lg min-h-[48px] rounded-xl"
+                      className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold text-base md:text-lg min-h-[44px] rounded-xl"
                       disabled={submitting}
                     >
                       {submitting ? 'Sending...' : 'Send Message'}
@@ -210,7 +213,7 @@ export const Contact: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Bottom CTA - matching features.tsx style */}
+        {/* Bottom CTA */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

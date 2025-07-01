@@ -1,54 +1,105 @@
+'use client'
+
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { motion } from 'framer-motion'
+import { Mail, Lock, User } from 'lucide-react'
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required />
-              </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-md mx-auto"
+      >
+        <Card className="bg-white hover:bg-gray-50/80 transition-all duration-300 rounded-2xl shadow-lg hover:shadow-2xl border-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+
+          <CardHeader className="relative pb-4 pt-8 text-center">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.2 }}
+              className="mb-4 mx-auto w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center shadow-lg"
+            >
+              <User className="w-8 h-8 text-emerald-600" />
+            </motion.div>
+            <CardTitle className="text-xl font-bold text-gray-900 transition-colors duration-300">
+              Login to your account
+            </CardTitle>
+            <CardDescription className="text-gray-600 text-center leading-relaxed">
+              Enter your email below to login to your account
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="relative space-y-4 px-6 pb-8">
+            <form>
+              <div className="flex flex-col gap-6">
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="email"
+                    className="text-gray-900 font-semibold text-sm flex items-center gap-2"
                   >
-                    Forgot your password?
-                  </a>
+                    <Mail className="w-4 h-4 text-emerald-600" />
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="m@example.com"
+                    required
+                    className="bg-gray-50 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500/20 rounded-xl text-base"
+                  />
                 </div>
-                <Input id="password" type="password" required />
+                <div className="grid gap-3">
+                  <div className="flex items-center">
+                    <Label
+                      htmlFor="password"
+                      className="text-gray-900 font-semibold text-sm flex items-center gap-2"
+                    >
+                      <Lock className="w-4 h-4 text-blue-600" />
+                      Password
+                    </Label>
+                    <a
+                      href="#"
+                      className="ml-auto inline-block text-sm text-emerald-600 hover:text-emerald-700 underline-offset-4 hover:underline transition-colors duration-200"
+                    >
+                      Forgot your password?
+                    </a>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    className="bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl text-base"
+                  />
+                </div>
+                <div className="flex flex-col gap-3">
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold text-base min-h-[44px] rounded-xl"
+                  >
+                    Login
+                  </Button>
+                </div>
               </div>
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Login with Google
-                </Button>
+              <div className="mt-4 text-center text-sm">
+                <span className="text-gray-600">Don&apos;t have an account?</span>{' '}
+                <a
+                  href="#"
+                  className="text-emerald-600 hover:text-emerald-700 underline underline-offset-4 font-medium transition-colors duration-200"
+                >
+                  Sign up
+                </a>
               </div>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{' '}
-              <a href="#" className="underline underline-offset-4">
-                Sign up
-              </a>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   )
 }
