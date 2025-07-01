@@ -17,7 +17,7 @@ export const Menu: React.FC = () => {
   const selectedPlan = selectedIdx !== null && menu ? menu[selectedIdx] : null
 
   return (
-    <section id="menu" className="container max-w-7xl py-12 px-4">
+    <section id="menu" className="container mx-auto max-w-7xl py-12 px-4">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 mb-4">
         Meal Plans
       </h2>

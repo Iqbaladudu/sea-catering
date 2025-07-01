@@ -35,7 +35,7 @@ const Customer: CollectionConfig = {
         description:
           'Minimum 8 characters, must include uppercase, lowercase, number, and special character',
       },
-      validate: (val: string) => {
+      validate: (val: any) => {
         if (!val) return 'Password is required'
         if (val.length < 8) return 'Password must be at least 8 characters long'
 
@@ -43,7 +43,6 @@ const Customer: CollectionConfig = {
         const hasLowercase = /[a-z]/.test(val)
         const hasNumber = /\d/.test(val)
         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(val)
-
         if (!hasUppercase) return 'Password must include at least one uppercase letter'
         if (!hasLowercase) return 'Password must include at least one lowercase letter'
         if (!hasNumber) return 'Password must include at least one number'

@@ -19,7 +19,7 @@ export const Testimonials: React.FC = () => {
 
   return (
     <>
-      <section id="testimonials" className="container max-w-4xl py-12 px-4">
+      <section id="testimonials" className="container mx-auto max-w-4xl py-12 px-4">
         <TestimonialCard />
         <div className="flex justify-center mt-8">
           <Dialog open={open} onOpenChange={setOpen}>

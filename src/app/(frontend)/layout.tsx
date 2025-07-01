@@ -7,8 +7,9 @@ import ReactQueryProvider from '@/components/react-query-provider'
 import { Toaster } from '@/components/ui/sonner'
 
 export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
+  description:
+    'SEA Catering - Healthy Meals, Anytime, Anywhere. Premium meal delivery service across Indonesia.',
+  title: 'SEA Catering - Healthy Meal Delivery Service',
 }
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
@@ -18,16 +19,16 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body>
+        <body className="min-h-screen bg-white">
           <ReactQueryProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="system"
-              enableSystem
+              defaultTheme="light"
+              enableSystem={false}
               disableTransitionOnChange
             >
               <Navbar />
-              {children}
+              <main className="relative">{children}</main>
               <Footer />
               <Toaster />
             </ThemeProvider>
